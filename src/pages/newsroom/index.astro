@@ -1,0 +1,190 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import { withBase } from '../../utils/url';
+
+const items = (await getCollection('news')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const types = [
+  { id: 'all', label: 'All' },
+  { id: 'press', label: 'Press' },
+  { id: 'launch', label: 'Launch' },
+  { id: 'science', label: 'Science' },
+  { id: 'outreach', label: 'Outreach' },
+];
+
+const dateFmt = new Intl.DateTimeFormat('en-IN', {
+  day: '2-digit',
+  month: 'short',
+  year: 'numeric',
+  timeZone: 'UTC',
+});
+---
+
+<BaseLayout title="Newsroom" description="Launch updates, press releases and science findings from ISRO.">
+  <div class="page">
+    <div class="page__inner">
+      <PageHero
+        eyebrow="Newsroom"
+        title="What happened this month."
+        lede="Press, launches, science and outreach — split so you can ignore what you don't need."
+      />
+
+      <div class="filters" data-filters>
+        {
+          types.map((t, i) => (
+            <button type="button" class="filters__btn" data-filter={t.id} aria-pressed={i === 0 ? 'true' : 'false'}>
+              {t.label}
+            </button>
+          ))
+        }
+      </div>
+
+      <ul role="list" class="list" data-news-list>
+        {
+          items.map((item) => (
+            <li data-type={item.data.type}>
+              <a class="entry" href={withBase(`/newsroom/${item.id}`)}>
+                <time class="mono" datetime={item.data.date.toISOString()}>
+                  {dateFmt.format(item.data.date)}
+                </time>
+                <span class="entry__type">{item.data.type}</span>
+                <span class="entry__title">{item.data.title}</span>
+                <span class="entry__summary">{item.data.summary}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+
+      <p class="page__links">
+        <a href={withBase('/newsroom/gallery')}>Image gallery</a>
+        <a href={withBase('/newsroom/media-kit')}>Media kit</a>
+      </p>
+    </div>
+  </div>
+</BaseLayout>
+
+<style lang="scss">
+  @use 'mixins' as *;
+  @use 'tokens' as *;
+
+  .page {
+    padding-bottom: var(--section-y);
+  }
+
+  .page__inner {
+    @include shell;
+  }
+
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .filters__btn {
+    @include focus-ring;
+    padding: 0.45rem 0.9rem;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+
+    &[aria-pressed='true'] {
+      color: var(--ink);
+      border-color: var(--accent);
+      background: rgb(94 176 255 / 10%);
+    }
+  }
+
+  .list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .entry {
+    @include focus-ring(-2px);
+    display: grid;
+    gap: 0.35rem 1.5rem;
+    padding-block: 1.4rem;
+    border-bottom: 1px solid var(--line);
+
+    @include from('lg') {
+      grid-template-columns: 8rem 6rem 1fr;
+      align-items: baseline;
+    }
+
+    time {
+      font-size: 0.75rem;
+      color: var(--ink-3);
+    }
+  }
+
+  .entry__type {
+    @include eyebrow;
+    color: var(--accent);
+  }
+
+  .entry__title {
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    font-weight: 500;
+    color: var(--ink);
+    grid-column: 1 / -1;
+
+    @include from('lg') {
+      grid-column: 3;
+      grid-row: 1;
+    }
+  }
+
+  .entry__summary {
+    font-size: 0.875rem;
+    color: var(--ink-3);
+    grid-column: 1 / -1;
+    max-width: 62ch;
+
+    @include from('lg') {
+      grid-column: 3;
+    }
+  }
+
+  .page__links {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 2.5rem;
+
+    a {
+      color: var(--accent-lit);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+  }
+</style>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const initial = params.get('type') ?? 'all';
+  const buttons = document.querySelectorAll<HTMLButtonElement>('[data-filter]');
+  const items = document.querySelectorAll<HTMLElement>('[data-type]');
+
+  const apply = (id: string) => {
+    buttons.forEach((btn) => btn.setAttribute('aria-pressed', String(btn.dataset.filter === id)));
+    items.forEach((el) => {
+      el.hidden = !(id === 'all' || el.dataset.type === id);
+    });
+  };
+
+  buttons.forEach((btn) => btn.addEventListener('click', () => apply(btn.dataset.filter ?? 'all')));
+  apply(initial);
+</script>

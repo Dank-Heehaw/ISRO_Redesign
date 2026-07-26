@@ -1,0 +1,17 @@
+---
+import InteriorPage from '../../components/InteriorPage.astro';
+import { withBase } from '../../utils/url';
+---
+
+<InteriorPage
+  title="Microgravity Research"
+  eyebrow="Science"
+  description="Indian microgravity experiments — IMEx, Axiom-4 results, and biology flown in orbit."
+  lede="What happens to materials, plants and physiology when weight goes away."
+>
+  <p>
+    The Axiom-4 mission carried an Indian microgravity portfolio flown by Gaganyatri Shubhanshu Shukla.
+    IMEx-2026 continues that line with national opportunity announcements for new experimenters.
+  </p>
+  <p><a href={withBase('/missions/gaganyaan')}>Gaganyaan programme →</a></p>
+</InteriorPage>

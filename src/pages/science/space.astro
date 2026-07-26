@@ -1,0 +1,17 @@
+---
+import InteriorPage from '../../components/InteriorPage.astro';
+import { withBase } from '../../utils/url';
+---
+
+<InteriorPage
+  title="Space Science"
+  eyebrow="Science"
+  description="Astronomy, heliophysics and planetary science from AstroSat, Aditya-L1, Chandrayaan and more."
+  lede="Observatories and instruments looking outward — from the Sun to deep-sky X-ray sources."
+>
+  <p>
+    AstroSat remains India's multi-wavelength astronomy workhorse. Aditya-L1 watches the Sun from L1.
+    Chandrayaan and Mangalyaan returned planetary science that is still being mined from the archive.
+  </p>
+  <p><a href={withBase('/missions?category=science')}>Related missions →</a></p>
+</InteriorPage>

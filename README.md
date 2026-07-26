@@ -101,9 +101,6 @@ reproduction of hers — her study is the reason it looks the way it does, and t
 credit belongs to her. Full attribution is on the `/brand` page and in the site
 footer.
 
-**Reference sites** — NASA, SpaceX and Blue Origin, for the argument that a
-space agency's homepage should show you one thing at a time.
-
 **Typefaces** — Space Grotesk (display), Inter (body), JetBrains Mono
 (telemetry and labels), Noto Sans Devanagari (Hindi), all self-hosted via
 Fontsource.

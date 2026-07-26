@@ -1,0 +1,23 @@
+---
+import InteriorPage from '../../components/InteriorPage.astro';
+import { withBase } from '../../utils/url';
+---
+
+<InteriorPage
+  title="Science"
+  eyebrow="Science"
+  description="Space science, Earth observation research, and microgravity experiments across the Indian programme."
+  lede="Findings and open data from observatories, Earth sensors, and experiments flown in orbit."
+>
+  <ul>
+    <li><a href={withBase('/science/space')}>Space science</a> — astronomy, heliophysics, planetary science</li>
+    <li><a href={withBase('/science/earth')}>Earth science</a> — climate, cryosphere, agriculture, disaster response</li>
+    <li><a href={withBase('/science/microgravity')}>Microgravity research</a> — IMEx, Axiom-4, CROPS</li>
+  </ul>
+  <p>
+    Open archives live on external portals:
+    <a href="https://bhuvan.nrsc.gov.in" target="_blank" rel="noreferrer">Bhuvan</a>,
+    <a href="https://mosdac.gov.in" target="_blank" rel="noreferrer">MOSDAC</a>,
+    <a href="https://issdc.gov.in" target="_blank" rel="noreferrer">ISSDC</a>.
+  </p>
+</InteriorPage>

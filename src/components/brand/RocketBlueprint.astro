@@ -1,0 +1,156 @@
+---
+/**
+ * Blueprint-style launch vehicle outlines, drawn to match the characteristic
+ * proportions of each ISRO rocket (nose, strap-ons, stage breaks).
+ * Stroke-only — no fill wash — so they read as technical drawings.
+ */
+interface Props {
+  id: string;
+  class?: string;
+}
+
+const { id, class: className } = Astro.props;
+---
+
+{
+  id === 'sslv' && (
+    <svg class:list={['rocket', className]} viewBox="0 0 48 220" fill="none" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+      {/* Slim three-stage solid stack — pointed ogive, no strap-ons */}
+      <path
+        class="rocket__stroke"
+        d="M24 4 C28 18 30 32 30 48 L30 198 L34 216 L14 216 L18 198 L18 48 C18 32 20 18 24 4 Z"
+      />
+      <line class="rocket__detail" x1="18" y1="72" x2="30" y2="72" />
+      <line class="rocket__detail" x1="18" y1="128" x2="30" y2="128" />
+      <line class="rocket__detail" x1="18" y1="172" x2="30" y2="172" />
+      <path class="rocket__detail" d="M20 48 L28 48" />
+      <circle class="rocket__detail" cx="24" cy="28" r="1.2" />
+      <path class="rocket__accent" d="M18 198 L24 208 L30 198" />
+    </svg>
+  )
+}
+
+{
+  id === 'pslv' && (
+    <svg class:list={['rocket', className]} viewBox="0 0 72 220" fill="none" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+      {/* Tall core + six solid strap-ons at the base */}
+      <path
+        class="rocket__stroke"
+        d="M36 2 C42 16 46 30 46 48 L46 188 L52 216 L20 216 L26 188 L26 48 C26 30 30 16 36 2 Z"
+      />
+      {/* Strap-ons — left */}
+      <path class="rocket__stroke" d="M14 118 L18 118 L20 188 L16 208 L10 208 L8 188 Z" />
+      <path class="rocket__stroke" d="M6 138 L10 138 L12 188 L8 206 L4 206 L2 188 Z" />
+      <path class="rocket__stroke" d="M22 100 L26 100 L26 188" />
+      {/* Strap-ons — right */}
+      <path class="rocket__stroke" d="M58 118 L54 118 L52 188 L56 208 L62 208 L64 188 Z" />
+      <path class="rocket__stroke" d="M66 138 L62 138 L60 188 L64 206 L68 206 L70 188 Z" />
+      <path class="rocket__stroke" d="M50 100 L46 100 L46 188" />
+      {/* Stage breaks */}
+      <line class="rocket__detail" x1="26" y1="68" x2="46" y2="68" />
+      <line class="rocket__detail" x1="26" y1="110" x2="46" y2="110" />
+      <line class="rocket__detail" x1="26" y1="152" x2="46" y2="152" />
+      <line class="rocket__detail" x1="26" y1="178" x2="46" y2="178" />
+      {/* Interstage rings */}
+      <rect class="rocket__detail" x="28" y="108" width="16" height="4" />
+      <path class="rocket__accent" d="M26 188 L36 204 L46 188" />
+    </svg>
+  )
+}
+
+{
+  id === 'gslv' && (
+    <svg class:list={['rocket', className]} viewBox="0 0 80 220" fill="none" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+      {/* Cryogenic upper stage + four larger liquid strap-ons */}
+      <path
+        class="rocket__stroke"
+        d="M40 2 C48 14 52 28 52 46 L52 186 L58 216 L22 216 L28 186 L28 46 C28 28 32 14 40 2 Z"
+      />
+      {/* Large L40 strap-ons */}
+      <path
+        class="rocket__stroke"
+        d="M12 78 C16 78 18 82 18 88 L20 186 L16 210 L6 210 L4 186 L6 88 C6 82 8 78 12 78 Z"
+      />
+      <path
+        class="rocket__stroke"
+        d="M68 78 C64 78 62 82 62 88 L60 186 L64 210 L74 210 L76 186 L74 88 C74 82 72 78 68 78 Z"
+      />
+      <path class="rocket__stroke" d="M22 88 L28 88 L28 186" />
+      <path class="rocket__stroke" d="M58 88 L52 88 L52 186" />
+      {/* Cryogenic stage cue — wider upper diameter */}
+      <path class="rocket__detail" d="M30 46 L50 46 L48 68 L32 68 Z" />
+      <line class="rocket__detail" x1="28" y1="92" x2="52" y2="92" />
+      <line class="rocket__detail" x1="28" y1="140" x2="52" y2="140" />
+      <line class="rocket__detail" x1="28" y1="176" x2="52" y2="176" />
+      <circle class="rocket__detail" cx="40" cy="28" r="2" />
+      <path class="rocket__accent" d="M28 186 L40 206 L52 186" />
+    </svg>
+  )
+}
+
+{
+  id === 'lvm3' && (
+    <svg class:list={['rocket', className]} viewBox="0 0 96 220" fill="none" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+      {/* Short & wide — two S200 solids flanking a liquid core, blunt heat-shield nose */}
+      <path
+        class="rocket__stroke"
+        d="M48 6 C58 10 62 22 62 36 L62 170 L68 214 L28 214 L34 170 L34 36 C34 22 38 10 48 6 Z"
+      />
+      {/* Heat shield / payload fairing cue */}
+      <ellipse class="rocket__detail" cx="48" cy="36" rx="14" ry="4" />
+      <path class="rocket__detail" d="M36 36 L36 58 L60 58 L60 36" />
+      {/* S200 boosters — fat, shouldered */}
+      <path
+        class="rocket__stroke"
+        d="M10 52 C18 50 22 56 22 64 L24 170 L20 210 L4 210 L2 170 L4 64 C4 56 6 52 10 52 Z"
+      />
+      <path
+        class="rocket__stroke"
+        d="M86 52 C78 50 74 56 74 64 L72 170 L76 210 L92 210 L94 170 L92 64 C92 56 90 52 86 52 Z"
+      />
+      {/* Booster nose cones */}
+      <path class="rocket__stroke" d="M10 52 C14 40 18 40 22 52" />
+      <path class="rocket__stroke" d="M74 52 C78 40 82 40 86 52" />
+      {/* Stage / intertank */}
+      <line class="rocket__detail" x1="34" y1="88" x2="62" y2="88" />
+      <line class="rocket__detail" x1="34" y1="128" x2="62" y2="128" />
+      <line class="rocket__detail" x1="34" y1="158" x2="62" y2="158" />
+      <rect class="rocket__detail" x="38" y="86" width="20" height="5" />
+      {/* Nozzle bells */}
+      <path class="rocket__accent" d="M34 170 L48 200 L62 170" />
+      <path class="rocket__accent" d="M4 170 L12 198 L20 170" />
+      <path class="rocket__accent" d="M76 170 L84 198 L92 170" />
+    </svg>
+  )
+}
+
+<style lang="scss">
+  .rocket {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  .rocket__stroke {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 1.15;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+  }
+
+  .rocket__detail {
+    fill: none;
+    stroke: var(--ink-3);
+    stroke-width: 0.7;
+    stroke-linejoin: round;
+  }
+
+  .rocket__accent {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 1;
+    stroke-linejoin: round;
+    opacity: 0.85;
+  }
+</style>

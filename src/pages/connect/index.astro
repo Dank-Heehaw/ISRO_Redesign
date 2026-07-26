@@ -1,0 +1,19 @@
+---
+import InteriorPage from '../../components/InteriorPage.astro';
+import { withBase } from '../../utils/url';
+---
+
+<InteriorPage
+  title="Connect"
+  eyebrow="Connect"
+  description="Careers, student programmes, tenders and contact routes for ISRO."
+  lede="Work with us, learn with us, supply to us."
+>
+  <ul>
+    <li><a href={withBase('/connect/careers')}>Careers</a></li>
+    <li><a href={withBase('/connect/students')}>Students — YUVIKA &amp; START</a></li>
+    <li><a href={withBase('/connect/tenders')}>Tenders</a></li>
+    <li><a href={withBase('/connect/ask')}>Ask an Expert</a></li>
+    <li><a href={withBase('/connect/contact')}>Contact</a></li>
+  </ul>
+</InteriorPage>

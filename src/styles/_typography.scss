@@ -80,14 +80,14 @@ p {
     height: auto;
     clip-path: none;
     padding: 0.75rem 1.25rem;
-    background: var(--saffron);
-    color: #14060a;
+    background: var(--accent);
+    color: #041018;
     font-weight: 600;
     border-radius: var(--radius);
   }
 }
 
 ::selection {
-  background: var(--saffron);
-  color: #14060a;
+  background: var(--accent);
+  color: #041018;
 }

@@ -1,0 +1,155 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import RocketBlueprint from '../../components/brand/RocketBlueprint.astro';
+import { withBase } from '../../utils/url';
+
+const vehicles = (await getCollection('vehicles')).sort((a, b) => a.data.order - b.data.order);
+const tallest = Math.max(...vehicles.map((v) => v.data.heightM));
+---
+
+<BaseLayout
+  title="Launch Vehicles"
+  description="PSLV, GSLV, LVM3 and SSLV — India's launch fleet, compared to scale."
+>
+  <div class="page">
+    <div class="page__inner">
+      <PageHero
+        eyebrow="Launch vehicles"
+        title="Four vehicles, drawn to scale."
+        lede="From a small-satellite launcher assembled in days to a heavy lifter being human-rated for crew."
+      />
+
+      <div class="fleet">
+        {
+          vehicles.map((v) => (
+            <article class="vehicle" id={v.id}>
+              <div class="vehicle__art" style={`--h: ${(v.data.heightM / tallest) * 100}%`}>
+                <RocketBlueprint id={v.id} />
+              </div>
+              <div class="vehicle__body">
+                <h2>{v.data.name}</h2>
+                <p class="vehicle__full">{v.data.fullName}</p>
+                <p>{v.data.summary}</p>
+                <dl>
+                  <div>
+                    <dt>Height</dt>
+                    <dd>{v.data.heightM} m</dd>
+                  </div>
+                  <div>
+                    <dt>Liftoff mass</dt>
+                    <dd>{v.data.liftoffMassT} t</dd>
+                  </div>
+                  <div>
+                    <dt>LEO payload</dt>
+                    <dd>{(v.data.payloadLeoKg / 1000).toFixed(1)} t</dd>
+                  </div>
+                  <div>
+                    <dt>Stages</dt>
+                    <dd>{v.data.stages}</dd>
+                  </div>
+                  <div>
+                    <dt>First flight</dt>
+                    <dd>{v.data.firstFlight}</dd>
+                  </div>
+                  <div>
+                    <dt>Status</dt>
+                    <dd>{v.data.status}</dd>
+                  </div>
+                </dl>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+
+      <p class="page__note">
+        <a href={withBase('/missions')}>← Back to missions</a>
+      </p>
+    </div>
+  </div>
+</BaseLayout>
+
+<style lang="scss">
+  @use 'mixins' as *;
+
+  .page {
+    padding-bottom: var(--section-y);
+  }
+
+  .page__inner {
+    @include shell;
+  }
+
+  .fleet {
+    display: grid;
+    gap: clamp(2.5rem, 5vw, 4rem);
+  }
+
+  .vehicle {
+    display: grid;
+    gap: 2rem;
+    padding-bottom: 2.5rem;
+    border-bottom: 1px solid var(--line);
+
+    @include from('md') {
+      grid-template-columns: 8rem 1fr;
+      align-items: end;
+    }
+  }
+
+  .vehicle__art {
+    height: clamp(12rem, 28vw, 18rem);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+
+    :global(svg) {
+      height: var(--h);
+      width: auto;
+      max-width: 100%;
+    }
+  }
+
+  .vehicle__body {
+    display: grid;
+    gap: 0.75rem;
+    color: var(--ink-2);
+    line-height: 1.65;
+
+    h2 {
+      font-size: var(--step-3);
+    }
+  }
+
+  .vehicle__full {
+    @include eyebrow;
+    color: var(--accent);
+  }
+
+  dl {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+    gap: 1rem;
+    margin: 0.75rem 0 0;
+
+    dt {
+      @include eyebrow;
+    }
+
+    dd {
+      margin: 0.25rem 0 0;
+      font-family: var(--font-mono);
+      color: var(--ink);
+    }
+  }
+
+  .page__note {
+    margin-top: 2.5rem;
+
+    a {
+      color: var(--accent-lit);
+    }
+  }
+</style>

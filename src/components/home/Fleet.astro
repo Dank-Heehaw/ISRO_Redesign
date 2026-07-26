@@ -1,12 +1,23 @@
 ---
 import { getCollection } from 'astro:content';
 import SectionHeader from '../SectionHeader.astro';
+import RocketBlueprint from '../brand/RocketBlueprint.astro';
 
-const vehicles = (await getCollection('vehicles')).sort((a, b) => a.data.order - b.data.order);
+const vehicles = (await getCollection('vehicles')).sort((a, b) => a.data.heightM - b.data.heightM);
 const tallest = Math.max(...vehicles.map((v) => v.data.heightM));
+const heaviest = Math.max(...vehicles.map((v) => v.data.liftoffMassT));
+const maxLeo = Math.max(...vehicles.map((v) => v.data.payloadLeoKg));
 
-// A 1.8 m figure next to the fleet gives the heights a human reference.
-const humanH = (1.8 / tallest) * 100;
+const stageRem = 22;
+const ticks = Array.from({ length: Math.floor(tallest / 10) + 1 }, (_, i) => i * 10);
+
+/** viewBox width / height — used so rocket height alone drives scale */
+const aspect: Record<string, string> = {
+  sslv: '48 / 220',
+  pslv: '72 / 220',
+  gslv: '80 / 220',
+  lvm3: '96 / 220',
+};
 ---
 
 <section class="fleet">
@@ -14,71 +25,107 @@ const humanH = (1.8 / tallest) * 100;
     <SectionHeader
       eyebrow="Launch vehicles"
       title="Four vehicles, drawn to scale."
-      lede="From a 34-metre small-satellite launcher assembled in days to a 640-tonne heavy lifter being human-rated for crew."
+      lede="All four stand on one ground line. The left ruler is metres — heights, mass, and LEO payload are shown to the same relative scale."
       href="/launch-vehicles"
       linkLabel="Full fleet"
     />
-  </div>
 
-  <div class="fleet__scroller" role="region" aria-label="Launch vehicles compared by height" tabindex="0">
-    <div class="fleet__track">
-      <div class="fleet__human" style={`--h: ${humanH}%`}>
-        <span class="fleet__human-figure" aria-hidden="true"></span>
-        <span class="fleet__human-label mono">1.8 m</span>
+    <div class="fleet__viewport">
+      <div class="fleet__ruler" aria-hidden="true">
+        <div class="fleet__stage">
+          {
+            ticks.map((m) => (
+              <div class="fleet__tick" style={`--pct: ${(m / tallest) * 100}%`}>
+                <span class="fleet__tick-label mono">
+                  {m}<span class="fleet__tick-unit">m</span>
+                </span>
+                <span class="fleet__tick-mark"></span>
+              </div>
+            ))
+          }
+        </div>
+        <div class="fleet__below"></div>
       </div>
 
-      {
-        vehicles.map((v) => (
-          <article class="vehicle" style={`--h: ${(v.data.heightM / tallest) * 100}%`} data-anim="fade-up">
-            <div class="vehicle__column">
-              <svg class="vehicle__silhouette" viewBox="0 0 40 200" preserveAspectRatio="none" aria-hidden="true">
-                <path
-                  d="M20 0 C26 16 30 30 30 44 L30 176 L36 200 L4 200 L10 176 L10 44 C10 30 14 16 20 0 Z"
-                  fill="url(#vehicle-fill)"
-                  stroke="var(--line-strong)"
-                  stroke-width="0.6"
-                  vector-effect="non-scaling-stroke"
-                />
-              </svg>
-              <span class="vehicle__height mono">{v.data.heightM} m</span>
-            </div>
+      <div class="fleet__scroller" role="region" aria-label="Launch vehicles compared by height" tabindex="0">
+        <div class="fleet__track">
+          {
+            vehicles.map((v) => {
+              return (
+                <article class="fleet__col" data-anim="fade-up">
+                  <div class="fleet__stage">
+                    {
+                      ticks
+                        .filter((m) => m > 0)
+                        .map((m) => <span class="fleet__guide" style={`--pct: ${(m / tallest) * 100}%`} />)
+                    }
+                    <div
+                      class="fleet__rocket"
+                      style={`--rocket-h: ${(v.data.heightM / tallest) * 100}%; aspect-ratio: ${aspect[v.id] ?? '48 / 220'}`}
+                    >
+                      <RocketBlueprint id={v.id} />
+                    </div>
+                  </div>
 
-            <div class="vehicle__meta">
-              <h3 class="vehicle__name">{v.data.name}</h3>
-              <p class="vehicle__full">{v.data.fullName}</p>
-              <dl class="vehicle__specs">
-                <div>
-                  <dt>LEO</dt>
-                  <dd>{(v.data.payloadLeoKg / 1000).toFixed(1)} t</dd>
-                </div>
-                <div>
-                  <dt>Stages</dt>
-                  <dd>{v.data.stages}</dd>
-                </div>
-                <div>
-                  <dt>Debut</dt>
-                  <dd>{v.data.firstFlight}</dd>
-                </div>
-              </dl>
-            </div>
-          </article>
-        ))
-      }
+                  <p class="fleet__height mono">{v.data.heightM} m</p>
+
+                  <div class="fleet__card">
+                    <h3 class="fleet__name">{v.data.name}</h3>
+                    <p class="fleet__full">{v.data.fullName}</p>
+
+                    <dl class="fleet__specs">
+                      <div>
+                        <dt>Liftoff mass</dt>
+                        <dd>{v.data.liftoffMassT} t</dd>
+                      </div>
+                      <div>
+                        <dt>LEO payload</dt>
+                        <dd>{(v.data.payloadLeoKg / 1000).toFixed(1)} t</dd>
+                      </div>
+                      {
+                        v.data.payloadGtoKg != null && (
+                          <div>
+                            <dt>GTO payload</dt>
+                            <dd>{(v.data.payloadGtoKg / 1000).toFixed(2)} t</dd>
+                          </div>
+                        )
+                      }
+                      <div>
+                        <dt>Stages</dt>
+                        <dd>{v.data.stages}</dd>
+                      </div>
+                      <div>
+                        <dt>First flight</dt>
+                        <dd>{v.data.firstFlight}</dd>
+                      </div>
+                    </dl>
+
+                    <div class="fleet__bars" aria-hidden="true">
+                      <div class="fleet__bar">
+                        <span>Mass</span>
+                        <i style={`--w: ${(v.data.liftoffMassT / heaviest) * 100}%`}></i>
+                      </div>
+                      <div class="fleet__bar">
+                        <span>LEO</span>
+                        <i class="is-leo" style={`--w: ${(v.data.payloadLeoKg / maxLeo) * 100}%`}></i>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              );
+            })
+          }
+        </div>
+      </div>
+      <div class="fleet__fades" aria-hidden="true">
+        <span class="fleet__fade fleet__fade--left"></span>
+        <span class="fleet__fade fleet__fade--right"></span>
+      </div>
     </div>
   </div>
-
-  <svg width="0" height="0" aria-hidden="true" focusable="false">
-    <defs>
-      <linearGradient id="vehicle-fill" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#2b3646"></stop>
-        <stop offset="0.55" stop-color="#1a2231"></stop>
-        <stop offset="1" stop-color="#ff6b12" stop-opacity="0.85"></stop>
-      </linearGradient>
-    </defs>
-  </svg>
 </section>
 
-<style lang="scss">
+<style lang="scss" define:vars={{ stageRem: `${stageRem}rem` }}>
   @use 'mixins' as *;
   @use 'tokens' as *;
 
@@ -97,101 +144,471 @@ const humanH = (1.8 / tallest) * 100;
     overscroll-behavior-x: contain;
     scrollbar-width: thin;
     scrollbar-color: var(--line-strong) transparent;
+    /* Keep the 0 tick (translateY 50%) from clipping under overflow-x */
+    padding-bottom: 0.5rem;
+  }
+
+  .fleet__viewport {
+    position: relative;
+    display: grid;
+    grid-template-columns: 2.25rem minmax(0, 1fr);
+    gap: clamp(1rem, 2.5vw, 2rem);
+    align-items: start;
+  }
+
+  .fleet__fades {
+    display: none;
   }
 
   .fleet__track {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: clamp(1rem, 2.5vw, 2rem);
+    width: 100%;
+    align-items: start;
+  }
+
+  .fleet__ruler {
+    min-width: 0;
+  }
+
+  .fleet__col {
+    min-width: 0;
+  }
+
+  .fleet__stage {
+    position: relative;
     display: flex;
     align-items: flex-end;
-    gap: clamp(1.5rem, 4vw, 3.5rem);
-    min-height: 34rem;
-    padding-inline: var(--gutter);
-    padding-block: 1rem 0;
-    width: max-content;
+    justify-content: center;
+    height: var(--stageRem);
   }
 
-  .fleet__human {
+  .fleet__col .fleet__stage {
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  .fleet__tick {
+    position: absolute;
+    right: 0;
+    bottom: var(--pct);
+    left: auto;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: flex-end;
-    gap: 0.5rem;
-    height: 26rem;
-    flex: none;
+    gap: 0.2rem;
+    transform: translateY(50%);
   }
 
-  .fleet__human-figure {
+  .fleet__tick-mark {
     width: 8px;
-    height: max(4px, var(--h));
-    border-radius: 4px 4px 0 0;
-    background: var(--ink-3);
+    height: 1px;
+    background: var(--line-strong);
+    flex-shrink: 0;
   }
 
-  .fleet__human-label {
-    font-size: 0.625rem;
+  .fleet__tick-label {
+    font-size: 0.5625rem;
     color: var(--ink-3);
-    white-space: nowrap;
+    min-width: 0;
+    text-align: right;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
   }
 
-  .vehicle {
+  .fleet__tick-unit {
+    margin-left: 0.05em;
+  }
+
+  .fleet__guide {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: var(--pct);
+    border-top: 1px dashed rgb(255 255 255 / 7%);
+    pointer-events: none;
+  }
+
+  .fleet__rocket {
+    position: relative;
+    z-index: 1;
+    height: var(--rocket-h, 100%);
+    width: auto;
+    max-width: 100%;
+    max-height: 100%;
+    flex-shrink: 1;
     display: flex;
-    flex-direction: column;
-    flex: none;
-    width: clamp(9rem, 18vw, 13rem);
+    align-items: flex-end;
+    justify-content: center;
+
+    :global(svg) {
+      display: block;
+      width: auto;
+      height: 100%;
+      max-width: 100%;
+      overflow: visible;
+    }
   }
 
-  .vehicle__column {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-end;
-    height: 26rem;
-    gap: 0.6rem;
-  }
-
-  .vehicle__silhouette {
-    width: clamp(2.2rem, 4vw, 3.2rem);
-    height: var(--h);
-    filter: drop-shadow(0 0 26px rgb(255 107 18 / 18%));
-  }
-
-  .vehicle__height {
-    font-size: 0.6875rem;
-    color: var(--ink-2);
-  }
-
-  .vehicle__meta {
-    padding-top: 1.1rem;
-    margin-top: 1rem;
-    border-top: 1px solid var(--line-strong);
-  }
-
-  .vehicle__name {
-    font-size: 1.25rem;
-  }
-
-  .vehicle__full {
-    margin-top: 0.3rem;
+  .fleet__height {
+    margin: 0.7rem 0 0;
     font-size: 0.75rem;
-    line-height: 1.45;
-    color: var(--ink-3);
-    min-height: 2.2em;
+    font-weight: 500;
+    color: var(--ink);
+    text-align: center;
   }
 
-  .vehicle__specs {
-    display: flex;
-    gap: 1.1rem;
+  .fleet__below {
+    min-height: 11rem;
+  }
+
+  .fleet__card {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--line);
+    text-align: center;
+  }
+
+  .fleet__name {
+    font-size: 1.2rem;
+  }
+
+  .fleet__full {
+    margin-top: 0.3rem;
+    font-size: 0.7rem;
+    line-height: 1.4;
+    color: var(--ink-3);
+    min-height: 2.8em;
+  }
+
+  .fleet__specs {
+    display: grid;
+    gap: 0.55rem;
     margin: 1rem 0 0;
+    text-align: left;
+
+    div {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.75rem;
+      align-items: baseline;
+      padding-bottom: 0.35rem;
+      border-bottom: 1px solid var(--line);
+    }
 
     dt {
       @include eyebrow;
-      font-size: 0.5625rem;
+      font-size: 0.5rem;
     }
 
     dd {
-      margin: 0.2rem 0 0;
+      margin: 0;
       font-family: var(--font-mono);
-      font-size: 0.8125rem;
+      font-size: 0.75rem;
       color: var(--ink);
+    }
+  }
+
+  .fleet__bars {
+    display: grid;
+    gap: 0.4rem;
+    margin-top: 0.9rem;
+  }
+
+  .fleet__bar {
+    display: grid;
+    grid-template-columns: 2.2rem 1fr;
+    gap: 0.4rem;
+    align-items: center;
+    text-align: left;
+
+    span {
+      font-family: var(--font-mono);
+      font-size: 0.5rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+    }
+
+    i {
+      display: block;
+      height: 4px;
+      border-radius: 999px;
+      background: var(--surface-2);
+      position: relative;
+      font-style: normal;
+
+      &::after {
+        content: '';
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: var(--w);
+        border-radius: inherit;
+        background: var(--ink-2);
+      }
+
+      &.is-leo::after {
+        background: var(--accent);
+      }
+    }
+  }
+
+  @include upto('lg') {
+    .fleet__stage {
+      height: 16rem;
+      width: 100%;
+      align-self: stretch;
+      justify-content: center;
+    }
+
+    .fleet__guide {
+      left: 0;
+      right: 0;
+    }
+
+    .fleet__viewport {
+      --fleet-ruler: 2rem;
+      --fleet-fade: clamp(2.25rem, 9vw, 3.25rem);
+      display: block;
+      /* True screen-edge bleed (not just shell gutter cancel) */
+      position: relative;
+      width: 100vw;
+      max-width: 100vw;
+      margin-left: calc(50% - 50vw);
+      margin-right: calc(50% - 50vw);
+    }
+
+    .fleet__scroller {
+      position: relative;
+      z-index: 1;
+      container-type: inline-size;
+      padding-inline: 0;
+      padding-bottom: 1rem;
+      scroll-snap-type: x mandatory;
+      scroll-padding-inline: 0;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+    }
+
+    .fleet__fades {
+      display: block;
+      position: absolute;
+      inset: 0;
+      z-index: 4;
+      pointer-events: none;
+    }
+
+    .fleet__fade {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: var(--fleet-fade);
+      backdrop-filter: blur(12px) saturate(120%);
+      -webkit-backdrop-filter: blur(12px) saturate(120%);
+    }
+
+    .fleet__fade--left {
+      left: 0;
+      background: linear-gradient(90deg, var(--void) 40%, rgb(4 6 10 / 45%) 70%, transparent);
+      mask-image: linear-gradient(90deg, #000 20%, transparent);
+      -webkit-mask-image: linear-gradient(90deg, #000 20%, transparent);
+    }
+
+    .fleet__fade--right {
+      right: 0;
+      background: linear-gradient(270deg, var(--void) 40%, rgb(4 6 10 / 45%) 70%, transparent);
+      mask-image: linear-gradient(270deg, #000 20%, transparent);
+      -webkit-mask-image: linear-gradient(270deg, #000 20%, transparent);
+    }
+
+    .fleet__track {
+      --fleet-gap: clamp(2.5rem, 12vw, 4.5rem);
+      --fleet-slide: min(78cqi, 22rem);
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      align-items: flex-start;
+      width: max-content;
+      gap: var(--fleet-gap);
+      padding-inline: calc((100cqi - var(--fleet-slide)) / 2);
+      box-sizing: content-box;
+    }
+
+    .fleet__ruler {
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index: 5;
+      width: var(--fleet-ruler);
+      margin: 0;
+      background: var(--void);
+      padding-right: 0;
+      box-sizing: border-box;
+      pointer-events: none;
+    }
+
+    .fleet__col {
+      flex: 0 0 var(--fleet-slide);
+      width: var(--fleet-slide);
+      max-width: var(--fleet-slide);
+      scroll-snap-align: center;
+      scroll-snap-stop: always;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      box-sizing: border-box;
+      min-width: 0;
+      padding-inline: clamp(0.75rem, 4vw, 1.5rem);
+    }
+
+    .fleet__stage {
+      width: 100%;
+      align-self: stretch;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+    }
+
+    .fleet__rocket {
+      max-width: min(100%, 9.5rem);
+      margin-inline: auto;
+    }
+
+    .fleet__height {
+      width: 100%;
+      max-width: 20rem;
+      margin-inline: auto;
+      padding-inline: 0;
+      text-align: center;
+      box-sizing: border-box;
+    }
+
+    .fleet__card {
+      width: 100%;
+      max-width: 20rem;
+      margin-inline: auto;
+      padding-inline: 0;
+      box-sizing: border-box;
+      text-align: center;
+    }
+
+    .fleet__name {
+      font-size: clamp(1.15rem, 5vw, 1.35rem);
+    }
+
+    .fleet__full {
+      min-height: 0;
+      max-width: 28ch;
+      margin-inline: auto;
+    }
+
+    .fleet__specs {
+      width: 100%;
+
+      div {
+        gap: 0.5rem;
+      }
+
+      dd {
+        text-align: right;
+        overflow-wrap: anywhere;
+      }
+    }
+
+    .fleet__bars {
+      width: 100%;
+    }
+
+    .fleet__below {
+      min-height: 0;
+    }
+
+    /* Tablet — exactly two vehicles in view */
+    @include from('md') {
+      .fleet__stage {
+        height: 18rem;
+      }
+
+      .fleet__viewport {
+        --fleet-ruler: 2.1rem;
+        --fleet-fade: clamp(2.5rem, 6vw, 3.75rem);
+      }
+
+      .fleet__scroller {
+        scroll-padding-inline: var(--fleet-ruler) 0;
+      }
+
+      .fleet__track {
+        --fleet-gap: clamp(1rem, 2vw, 1.75rem);
+        --fleet-slide: calc((100cqi - var(--fleet-ruler) - var(--fleet-gap)) / 2);
+        padding-inline: var(--fleet-ruler) 0;
+      }
+
+      .fleet__col {
+        scroll-snap-align: start;
+        padding-inline: clamp(0.75rem, 2vw, 1.25rem);
+      }
+
+      .fleet__rocket {
+        max-width: min(100%, 11rem);
+      }
+
+      .fleet__card,
+      .fleet__height {
+        max-width: none;
+      }
+    }
+  }
+
+  @include upto('sm') {
+    .fleet__stage {
+      height: 14rem;
+    }
+
+    .fleet__viewport {
+      --fleet-ruler: 1.85rem;
+      --fleet-fade: clamp(2rem, 8vw, 2.75rem);
+    }
+
+    .fleet__scroller {
+      --fleet-ruler: 1.85rem;
+    }
+
+    .fleet__track {
+      --fleet-gap: clamp(3rem, 14vw, 5.5rem);
+      --fleet-slide: min(82cqi, 20rem);
+    }
+
+    .fleet__col {
+      padding-inline: clamp(0.75rem, 4vw, 1.25rem);
+    }
+
+    .fleet__height,
+    .fleet__card {
+      padding-inline: 0;
+    }
+
+    .fleet__rocket {
+      max-width: min(100%, 8.5rem);
+    }
+
+    .fleet__card {
+      max-width: none;
+    }
+
+    .fleet__specs {
+      dt {
+        font-size: 0.45rem;
+      }
+
+      dd {
+        font-size: 0.6875rem;
+      }
     }
   }
 </style>

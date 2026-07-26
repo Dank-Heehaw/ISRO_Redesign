@@ -18,6 +18,11 @@ html.js [data-anim='split-lines'] {
 .split-line-wrap {
   display: block;
   overflow: clip;
+  // Give glyphs room so caps like G and punctuation aren't shaved by the mask.
+  padding-block: 0.14em;
+  margin-block: -0.14em;
+  padding-inline: 0.1em;
+  margin-inline: -0.1em;
 }
 
 html.js [data-anim='fade-up'] {

@@ -1,0 +1,149 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import { withBase } from '../../utils/url';
+
+export async function getStaticPaths() {
+  const missions = await getCollection('missions');
+  return missions.map((mission) => ({
+    params: { slug: mission.id },
+    props: { mission },
+  }));
+}
+
+const { mission } = Astro.props;
+const { Content } = await render(mission);
+const { name, summary, category, status, destination, vehicle, launchDate, stats, accent } =
+  mission.data;
+
+const statusLabel: Record<string, string> = {
+  operational: 'Operational',
+  completed: 'Completed',
+  'in-development': 'In development',
+  upcoming: 'Upcoming',
+};
+
+const dateFmt = launchDate
+  ? new Intl.DateTimeFormat('en-IN', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(
+      launchDate
+    )
+  : null;
+---
+
+<BaseLayout title={name} description={summary}>
+  <article class="mission" style={`--accent: ${accent}`}>
+    <div class="mission__inner">
+      <p class="mission__back">
+        <a href={withBase('/missions')}>← All missions</a>
+      </p>
+
+      <PageHero eyebrow={`${category} · ${statusLabel[status]}`} title={name} lede={summary} />
+
+      <dl class="mission__meta">
+        <div>
+          <dt>Destination</dt>
+          <dd>{destination}</dd>
+        </div>
+        {
+          vehicle && (
+            <div>
+              <dt>Vehicle</dt>
+              <dd>{vehicle}</dd>
+            </div>
+          )
+        }
+        {
+          dateFmt && (
+            <div>
+              <dt>Launch</dt>
+              <dd>{dateFmt}</dd>
+            </div>
+          )
+        }
+        {
+          stats.map((stat) => (
+            <div>
+              <dt>{stat.label}</dt>
+              <dd>{stat.value}</dd>
+            </div>
+          ))
+        }
+      </dl>
+
+      <div class="mission__body">
+        <Content />
+      </div>
+    </div>
+  </article>
+</BaseLayout>
+
+<style lang="scss">
+  @use 'mixins' as *;
+
+  .mission {
+    padding-bottom: var(--section-y);
+  }
+
+  .mission__inner {
+    @include shell;
+  }
+
+  .mission__back {
+    margin-top: 1.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+
+    a {
+      color: var(--ink-3);
+      transition: color 180ms ease;
+
+      &:hover {
+        color: var(--accent-lit);
+      }
+    }
+  }
+
+  .mission__meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    gap: 1px;
+    margin: 0 0 clamp(2rem, 4vw, 3rem);
+    background: var(--line);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    overflow: clip;
+
+    div {
+      padding: 1.1rem 1.25rem;
+      background: var(--surface);
+    }
+
+    dt {
+      @include eyebrow;
+      margin-bottom: 0.35rem;
+    }
+
+    dd {
+      margin: 0;
+      font-family: var(--font-display);
+      font-weight: 600;
+      color: var(--ink);
+    }
+  }
+
+  .mission__body {
+    max-width: 68ch;
+    display: grid;
+    gap: 1.1rem;
+    color: var(--ink-2);
+    line-height: 1.75;
+    font-size: var(--step-0);
+
+    :global(p) {
+      margin: 0;
+    }
+  }
+</style>

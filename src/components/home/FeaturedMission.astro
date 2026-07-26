@@ -8,15 +8,48 @@ interface Props {
 
 const { mission } = Astro.props;
 const { name, summary, stats, accent, destination, vehicle } = mission.data;
+
+const sketchfabId = '962a218eb4394890bfa55ab1e6b233e7';
+const sketchfabSrc = new URL(`https://sketchfab.com/models/${sketchfabId}/embed`);
+sketchfabSrc.searchParams.set('autostart', '1');
+sketchfabSrc.searchParams.set('ui_theme', 'dark');
+sketchfabSrc.searchParams.set('transparent', '1');
+sketchfabSrc.searchParams.set('ui_hint', '0');
+sketchfabSrc.searchParams.set('ui_infos', '0');
+sketchfabSrc.searchParams.set('ui_controls', '1');
+sketchfabSrc.searchParams.set('ui_stop', '0');
+sketchfabSrc.searchParams.set('dnt', '1');
 ---
 
 <section class="featured" style={`--accent: ${accent}`} data-featured>
-  <div class="featured__sticky">
-    <div class="featured__viz" aria-hidden="true">
-      <div class="featured__orbit featured__orbit--1" data-orbit="1"></div>
-      <div class="featured__orbit featured__orbit--2" data-orbit="2"></div>
-      <div class="featured__orbit featured__orbit--3" data-orbit="3"></div>
-      <div class="featured__body"></div>
+  <div class="featured__viz">
+    <svg class="featured__grid" viewBox="0 0 280 360" preserveAspectRatio="none" aria-hidden="true">
+      <defs>
+        <pattern id="bp-grid" width="14" height="14" patternUnits="userSpaceOnUse">
+          <path d="M14 0H0V14" stroke="currentColor" stroke-width="0.4" opacity="0.35" />
+        </pattern>
+        <radialGradient id="bp-fade" cx="50%" cy="48%" r="58%">
+          <stop offset="0%" stop-color="#fff" stop-opacity="1"></stop>
+          <stop offset="72%" stop-color="#fff" stop-opacity="0.5"></stop>
+          <stop offset="100%" stop-color="#fff" stop-opacity="0"></stop>
+        </radialGradient>
+        <mask id="bp-mask">
+          <rect width="280" height="360" fill="url(#bp-fade)"></rect>
+        </mask>
+      </defs>
+      <rect width="280" height="360" fill="url(#bp-grid)" mask="url(#bp-mask)"></rect>
+    </svg>
+
+    <div class="featured__model">
+      <iframe
+        title="ISRO Gaganyaan 3D model by the3dCartel on Sketchfab"
+        src={sketchfabSrc.href}
+        allow="autoplay; fullscreen; xr-spatial-tracking"
+        allowfullscreen
+        loading="lazy"
+        referrerpolicy="strict-origin-when-cross-origin"
+      >
+      </iframe>
     </div>
   </div>
 
@@ -67,105 +100,74 @@ const { name, summary, stats, accent, destination, vehicle } = mission.data;
       var(--void);
 
     @include from('lg') {
+      @include shell;
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--gutter);
-      padding-inline: var(--gutter);
-    }
-  }
-
-  .featured__sticky {
-    display: none;
-
-    @include from('lg') {
-      display: block;
-      position: sticky;
-      top: var(--header-h);
-      align-self: start;
-      height: calc(100svh - var(--header-h));
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.9fr);
+      gap: clamp(1.5rem, 3vw, 3rem);
+      // Both columns share one row — content height drives the embed height.
+      align-items: stretch;
     }
   }
 
   .featured__viz {
     position: relative;
-    display: grid;
-    place-items: center;
-    height: 100%;
+    // Mobile: keep a readable stage size.
+    min-height: min(88vw, 26rem);
+    margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+
+    @include from('lg') {
+      // Stretch to match the text column (eyebrow → stats grid).
+      margin-bottom: 0;
+      min-height: 0;
+      height: 100%;
+      align-self: stretch;
+    }
   }
 
-  .featured__body {
-    width: clamp(9rem, 15vw, 15rem);
-    aspect-ratio: 1;
-    border-radius: 50%;
-    background:
-      radial-gradient(circle at 32% 28%, color-mix(in srgb, var(--accent) 70%, #fff 10%), transparent 58%),
-      radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--accent) 42%, #000), #06080d 78%);
-    box-shadow:
-      inset -22px -14px 60px rgb(0 0 0 / 78%),
-      0 0 90px color-mix(in srgb, var(--accent) 26%, transparent);
-  }
-
-  .featured__orbit {
+  .featured__model {
     position: absolute;
-    border: 1px solid var(--line-strong);
-    border-radius: 50%;
-    rotate: x 72deg;
-    animation: spin 34s linear infinite;
+    // Fill the same band as the content: top of "Mission in focus" → bottom of stats.
+    inset: 0;
+    z-index: 1;
+    padding-inline: clamp(1rem, 4vw, 2.5rem);
+    background: transparent;
+    border-radius: 14px;
+    overflow: clip;
+    box-sizing: border-box;
 
-    &::after {
-      content: '';
-      position: absolute;
-      top: -4px;
-      left: 50%;
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--accent);
-      box-shadow: 0 0 14px 2px color-mix(in srgb, var(--accent) 65%, transparent);
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: transparent;
+      border-radius: inherit;
     }
   }
 
-  .featured__orbit--1 {
-    width: clamp(14rem, 24vw, 24rem);
-    aspect-ratio: 1;
-  }
-  .featured__orbit--2 {
-    width: clamp(19rem, 32vw, 32rem);
-    aspect-ratio: 1;
-    animation-duration: 56s;
-    animation-direction: reverse;
-    opacity: 0.7;
-  }
-  .featured__orbit--3 {
-    width: clamp(24rem, 40vw, 40rem);
-    aspect-ratio: 1;
-    animation-duration: 88s;
-    opacity: 0.4;
-  }
-
-  @keyframes spin {
-    to {
-      rotate: x 72deg z 360deg;
-    }
-  }
-
-  @include reduced-motion {
-    .featured__orbit {
-      animation: none;
-    }
+  .featured__grid {
+    position: absolute;
+    inset: 0;
+    width: auto;
+    height: auto;
+    color: var(--ink-3);
+    pointer-events: none;
+    z-index: 0;
+    border-radius: 14px;
+    overflow: clip;
   }
 
   .featured__content {
     @include shell;
 
     display: grid;
-    gap: clamp(3rem, 6vw, 5rem);
+    gap: clamp(2.5rem, 5vw, 4rem);
 
     @include from('lg') {
-      max-width: 40rem;
+      // Natural height — this is what sizes the embed column.
+      max-width: 38rem;
       padding-inline: 0;
-      align-content: center;
-      min-height: calc(100svh - var(--header-h));
+      margin: 0;
+      width: 100%;
     }
   }
 
@@ -205,7 +207,7 @@ const { name, summary, stats, accent, destination, vehicle } = mission.data;
     grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
     gap: 1px;
     margin: 0;
-    background: var(--line);
+    background: var(--surface-2);
     border: 1px solid var(--line);
     border-radius: var(--radius-lg);
     overflow: clip;

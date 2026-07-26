@@ -1,0 +1,164 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import MissionCard from '../../components/MissionCard.astro';
+import { withBase } from '../../utils/url';
+
+const missions = (await getCollection('missions')).sort((a, b) => a.data.order - b.data.order);
+
+const categories = [
+  { id: 'all', label: 'All' },
+  { id: 'human', label: 'Human' },
+  { id: 'planetary', label: 'Planetary' },
+  { id: 'earth', label: 'Earth' },
+  { id: 'navigation', label: 'Navigation' },
+  { id: 'science', label: 'Science' },
+  { id: 'communication', label: 'Communication' },
+];
+---
+
+<BaseLayout
+  title="Missions"
+  description="Spacecraft, human spaceflight, planetary exploration, Earth observation and navigation across the Indian space programme."
+>
+  <div class="page">
+    <div class="page__inner">
+      <PageHero
+        eyebrow="Missions"
+        title="In orbit, in transit, in build."
+        lede="Filter by category. Every card opens a full mission profile."
+      />
+
+      <div class="filters" role="tablist" aria-label="Mission categories" data-filters>
+        {
+          categories.map((cat, i) => (
+            <button
+              type="button"
+              class="filters__btn"
+              role="tab"
+              data-filter={cat.id}
+              aria-selected={i === 0 ? 'true' : 'false'}
+            >
+              {cat.label}
+            </button>
+          ))
+        }
+      </div>
+
+      <div class="grid" data-mission-grid>
+        {
+          missions.map((mission) => (
+            <div data-category={mission.data.category}>
+              <MissionCard mission={mission} />
+            </div>
+          ))
+        }
+      </div>
+
+      <p class="page__note">
+        Looking for the fleet? <a href={withBase('/launch-vehicles')}>Launch vehicles →</a>
+      </p>
+    </div>
+  </div>
+</BaseLayout>
+
+<style lang="scss">
+  @use 'mixins' as *;
+  @use 'tokens' as *;
+
+  .page {
+    padding-bottom: var(--section-y);
+  }
+
+  .page__inner {
+    @include shell;
+  }
+
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 2rem;
+  }
+
+  .filters__btn {
+    @include focus-ring;
+
+    padding: 0.45rem 0.9rem;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    transition:
+      color $dur-fast ease,
+      border-color $dur-fast ease,
+      background-color $dur-fast ease;
+
+    &[aria-selected='true'] {
+      color: var(--ink);
+      border-color: var(--accent);
+      background: rgb(94 176 255 / 10%);
+    }
+
+    @include hover {
+      color: var(--ink);
+      border-color: var(--line-strong);
+    }
+  }
+
+  .grid {
+    display: grid;
+    gap: clamp(1rem, 2vw, 1.5rem);
+    grid-template-columns: 1fr;
+
+    @include from('md') {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    @include from('xl') {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .page__note {
+    margin-top: 3rem;
+    font-size: 0.875rem;
+    color: var(--ink-3);
+
+    a {
+      color: var(--accent-lit);
+    }
+  }
+</style>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const initial = params.get('category') ?? 'all';
+
+  const buttons = document.querySelectorAll<HTMLButtonElement>('[data-filter]');
+  const cards = document.querySelectorAll<HTMLElement>('[data-category]');
+
+  const apply = (id: string) => {
+    buttons.forEach((btn) => {
+      btn.setAttribute('aria-selected', String(btn.dataset.filter === id));
+    });
+    cards.forEach((card) => {
+      const show = id === 'all' || card.dataset.category === id;
+      card.hidden = !show;
+    });
+    const url = new URL(window.location.href);
+    if (id === 'all') url.searchParams.delete('category');
+    else url.searchParams.set('category', id);
+    history.replaceState(null, '', url);
+  };
+
+  buttons.forEach((btn) => {
+    btn.addEventListener('click', () => apply(btn.dataset.filter ?? 'all'));
+  });
+
+  apply(initial);
+</script>

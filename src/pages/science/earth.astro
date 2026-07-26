@@ -1,0 +1,17 @@
+---
+import InteriorPage from '../../components/InteriorPage.astro';
+import { withBase } from '../../utils/url';
+---
+
+<InteriorPage
+  title="Earth Science"
+  eyebrow="Science"
+  description="Climate, cryosphere, agriculture and disaster response from India's Earth-observation constellation."
+  lede="How NISAR, Cartosat, Oceansat and INSAT turn orbit into maps people can use."
+>
+  <p>
+    Earth observation is the quiet majority of the programme — crop estimates, flood extents, forest
+    fire mapping, and soil moisture products released through Bhoonidhi and Bhuvan.
+  </p>
+  <p><a href={withBase('/missions?category=earth')}>Earth missions →</a></p>
+</InteriorPage>

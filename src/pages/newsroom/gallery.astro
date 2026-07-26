@@ -1,0 +1,16 @@
+---
+import InteriorPage from '../../components/InteriorPage.astro';
+import { withBase } from '../../utils/url';
+---
+
+<InteriorPage
+  title="Image Gallery"
+  eyebrow="Newsroom"
+  description="Imagery from ISRO missions, launches and Earth observation."
+  lede="A concept gallery destination — full archive lives on the official multimedia channels."
+>
+  <p>
+    Browse mission imagery and launch photography via the newsroom, or continue to
+    <a href={withBase('/newsroom')}>latest updates</a>.
+  </p>
+</InteriorPage>

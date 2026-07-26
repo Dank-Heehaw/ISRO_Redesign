@@ -1,0 +1,25 @@
+---
+import InteriorPage from '../../components/InteriorPage.astro';
+import { withBase } from '../../utils/url';
+---
+
+<InteriorPage
+  title="About ISRO"
+  eyebrow="Organisation"
+  description="The Indian Space Research Organisation — centres, autonomous bodies, and the commercial layer."
+  lede="Established in 1969. Builds launch vehicles, spacecraft, and the Earth-observation network a billion people rely on."
+>
+  <p>
+    ISRO is the space agency of India under the Department of Space. Its work spans launch vehicles,
+    satellites, planetary missions, human spaceflight, and open data services.
+  </p>
+  <ul>
+    <li><a href={withBase('/about/centres')}>Centres &amp; Units</a></li>
+    <li><a href={withBase('/about/autonomous-bodies')}>Autonomous bodies</a></li>
+    <li><a href={withBase('/brand')}>Brand &amp; credits</a></li>
+    <li>
+      <a href="https://www.inspace.gov.in" target="_blank" rel="noreferrer">IN-SPACe</a> ·
+      <a href="https://www.nsilindia.co.in" target="_blank" rel="noreferrer">NSIL</a>
+    </li>
+  </ul>
+</InteriorPage>

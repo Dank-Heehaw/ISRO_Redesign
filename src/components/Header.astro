@@ -9,7 +9,7 @@ const pathname = Astro.url.pathname;
 <header class="site-header" data-header>
   <div class="site-header__bar">
     <a class="site-header__brand" href={withBase('/')} aria-label="ISRO — home">
-      <Wordmark variant="full" />
+      <Wordmark variant="full" height={22} />
     </a>
 
     <nav class="site-header__nav" aria-label="Primary">
@@ -52,7 +52,7 @@ const pathname = Astro.url.pathname;
     </nav>
 
     <div class="site-header__actions">
-      <a class="site-header__live" href={withBase('/newsroom')}>
+      <a class="site-header__live" href={withBase('/newsroom')} aria-label="Watch Live — no stream active">
         <span class="site-header__pulse" aria-hidden="true"></span>
         Watch Live
       </a>
@@ -85,6 +85,10 @@ const pathname = Astro.url.pathname;
           </section>
         ))
       }
+      <a class="site-header__drawer-live" href={withBase('/newsroom')}>
+        <span class="site-header__pulse" aria-hidden="true"></span>
+        Watch Live
+      </a>
     </div>
   </div>
 </header>
@@ -98,22 +102,63 @@ const pathname = Astro.url.pathname;
     position: fixed;
     inset: 0 0 auto;
     z-index: map.get($z, 'header');
-    transition:
-      transform $dur-base $ease-out-quart,
-      background-color $dur-base ease,
-      border-color $dur-base ease;
     border-bottom: 1px solid transparent;
-    background: linear-gradient(to bottom, rgb(4 6 10 / 78%), transparent);
+    background: transparent;
+    transition:
+      transform $dur-slow $ease-out-quart,
+      border-color 800ms $ease-in-out-quint;
+
+    /* Frost plate — always present so blur/opacity can ease instead of popping on */
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background: rgb(4 6 10 / 0%);
+      backdrop-filter: blur(0) saturate(100%);
+      -webkit-backdrop-filter: blur(0) saturate(100%);
+      transition:
+        background-color 900ms $ease-in-out-quint,
+        backdrop-filter 900ms $ease-in-out-quint,
+        -webkit-backdrop-filter 900ms $ease-in-out-quint;
+    }
+
+    /* Soft top wash at rest — fades out as the frost takes over */
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background: linear-gradient(to bottom, rgb(4 6 10 / 72%), transparent 85%);
+      opacity: 1;
+      transition: opacity 900ms $ease-in-out-quint;
+    }
 
     &[data-pinned='false'] {
       transform: translateY(-100%);
     }
 
     &[data-scrolled='true'] {
-      background: rgb(4 6 10 / 88%);
-      backdrop-filter: blur(18px) saturate(140%);
       border-bottom-color: var(--line);
+
+      &::before {
+        background: rgb(4 6 10 / 72%);
+        backdrop-filter: blur(22px) saturate(160%);
+        -webkit-backdrop-filter: blur(22px) saturate(160%);
+      }
+
+      &::after {
+        opacity: 0;
+      }
     }
+  }
+
+  .site-header__bar,
+  .site-header__drawer {
+    position: relative;
+    z-index: 1;
   }
 
   .site-header__bar {
@@ -121,13 +166,35 @@ const pathname = Astro.url.pathname;
 
     display: flex;
     align-items: center;
-    gap: clamp(1rem, 3vw, 3rem);
+    gap: 0.75rem;
     min-height: var(--header-h);
+    min-width: 0;
+
+    @include from('lg') {
+      gap: clamp(1rem, 3vw, 3rem);
+    }
   }
 
   .site-header__brand {
     @include focus-ring;
     margin-right: auto;
+    min-width: 0;
+    flex: 1 1 auto;
+    max-width: calc(100% - 6.5rem);
+
+    @include from('lg') {
+      flex: 0 1 auto;
+      max-width: none;
+    }
+
+    :global(.wordmark) {
+      max-width: 100%;
+    }
+
+    :global(.wordmark__logo) {
+      max-width: 100%;
+      height: auto !important;
+    }
   }
 
   .site-header__nav {
@@ -254,6 +321,7 @@ const pathname = Astro.url.pathname;
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    flex: none;
   }
 
   .site-header__live {
@@ -274,14 +342,15 @@ const pathname = Astro.url.pathname;
     transition:
       border-color $dur-fast ease,
       background-color $dur-fast ease;
+    white-space: nowrap;
 
-    @include from('sm') {
+    @include from('lg') {
       display: inline-flex;
     }
 
     @include hover {
-      border-color: var(--saffron);
-      background: rgb(255 107 18 / 10%);
+      border-color: #e11d2e;
+      background: rgb(225 29 46 / 10%);
     }
   }
 
@@ -289,17 +358,17 @@ const pathname = Astro.url.pathname;
     width: 7px;
     height: 7px;
     border-radius: 50%;
-    background: var(--saffron);
-    box-shadow: 0 0 0 0 rgb(255 107 18 / 70%);
+    background: #e11d2e;
+    box-shadow: 0 0 0 0 rgb(225 29 46 / 70%);
     animation: pulse 2.4s infinite;
   }
 
   @keyframes pulse {
     70% {
-      box-shadow: 0 0 0 9px rgb(255 107 18 / 0%);
+      box-shadow: 0 0 0 9px rgb(225 29 46 / 0%);
     }
     100% {
-      box-shadow: 0 0 0 0 rgb(255 107 18 / 0%);
+      box-shadow: 0 0 0 0 rgb(225 29 46 / 0%);
     }
   }
 
@@ -359,6 +428,7 @@ const pathname = Astro.url.pathname;
   .site-header__drawer {
     max-height: calc(100svh - var(--header-h));
     overflow-y: auto;
+    overscroll-behavior: contain;
     background: rgb(4 6 10 / 98%);
     backdrop-filter: blur(20px);
     border-top: 1px solid var(--line);
@@ -376,17 +446,19 @@ const pathname = Astro.url.pathname;
     @include shell;
 
     display: grid;
-    gap: 2rem;
-    padding-block: 2rem 3rem;
+    gap: 1.75rem;
+    padding-block: 1.5rem 2.5rem;
 
     @include from('sm') {
       grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      padding-block: 2rem 3rem;
     }
   }
 
   .drawer-group__title {
     @include eyebrow;
-    color: var(--saffron);
+    color: var(--accent);
     margin-bottom: 0.75rem;
   }
 
@@ -406,6 +478,34 @@ const pathname = Astro.url.pathname;
     color: var(--ink-2);
     border-bottom: 1px solid var(--line);
   }
+
+  .site-header__drawer-live {
+    @include focus-ring;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    padding: 0.75rem 1.1rem;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink);
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+
+    @include from('sm') {
+      grid-column: 1 / -1;
+      justify-self: start;
+    }
+
+    @include from('lg') {
+      display: none;
+    }
+  }
 </style>
 
 <script>
@@ -413,11 +513,31 @@ const pathname = Astro.url.pathname;
   const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
   const drawer = document.querySelector<HTMLElement>('[data-drawer]');
 
+  const setMenuOpen = (open: boolean) => {
+    if (!toggle || !drawer) return;
+    toggle.setAttribute('aria-expanded', String(open));
+    drawer.hidden = !open;
+    document.body.style.overflow = open ? 'hidden' : '';
+  };
+
   if (toggle && drawer) {
+    toggle.setAttribute('aria-controls', 'site-menu');
+    drawer.id = 'site-menu';
+
     toggle.addEventListener('click', () => {
       const open = toggle.getAttribute('aria-expanded') === 'true';
-      toggle.setAttribute('aria-expanded', String(!open));
-      drawer.hidden = open;
+      setMenuOpen(!open);
+    });
+
+    drawer.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => setMenuOpen(false));
+    });
+
+    window.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
+        setMenuOpen(false);
+        toggle.focus();
+      }
     });
   }
 

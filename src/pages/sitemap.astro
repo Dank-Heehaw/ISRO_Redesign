@@ -1,0 +1,50 @@
+---
+import InteriorPage from '../components/InteriorPage.astro';
+import { primaryNav, footerMeta } from '../data/navigation';
+import { withBase } from '../utils/url';
+---
+
+<InteriorPage
+  title="Sitemap"
+  eyebrow="Index"
+  description="Human-readable sitemap for the ISRO redesign concept."
+  lede="Every internal destination in this demonstrator."
+>
+  {
+    primaryNav.map((group) => (
+      <section>
+        <h2>
+          <a href={withBase(group.href)}>{group.label}</a>
+        </h2>
+        <ul>
+          {group.links.map((link) => (
+            <li>
+              {link.external ? (
+                <a href={link.href} target="_blank" rel="noreferrer">
+                  {link.label}
+                </a>
+              ) : (
+                <a href={withBase(link.href)}>{link.label}</a>
+              )}
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))
+  }
+  <section>
+    <h2>Meta</h2>
+    <ul>
+      {
+        footerMeta.map((link) => (
+          <li>
+            <a href={withBase(link.href)}>{link.label}</a>
+          </li>
+        ))
+      }
+      <li>
+        <a href={withBase('/brand')}>Brand &amp; credits</a>
+      </li>
+    </ul>
+  </section>
+</InteriorPage>

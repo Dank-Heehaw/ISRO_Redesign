@@ -8,7 +8,7 @@ destination: Low Earth Orbit
 summary: >-
   India's first crewed spaceflight programme — a three-person capsule qualified
   to carry Gaganyatris to low Earth orbit and return them safely.
-accent: '#ff6b12'
+accent: '#5eb0ff'
 featured: true
 order: 2
 stats:

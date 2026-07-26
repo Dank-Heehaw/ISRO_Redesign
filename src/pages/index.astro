@@ -10,6 +10,7 @@ import Fleet from '../components/home/Fleet.astro';
 import Numbers from '../components/home/Numbers.astro';
 import Newsroom from '../components/home/Newsroom.astro';
 import Portals from '../components/home/Portals.astro';
+import Organisation from '../components/home/Organisation.astro';
 
 const missions = (await getCollection('missions')).sort((a, b) => a.data.order - b.data.order);
 const focus = missions.find((m) => m.id === 'gaganyaan') ?? missions[0]!;
@@ -44,6 +45,7 @@ const grid = missions.filter((m) => m.id !== focus.id).slice(0, 6);
   <Fleet />
   <Numbers />
   <Newsroom />
+  <Organisation />
   <Portals />
 </BaseLayout>
 

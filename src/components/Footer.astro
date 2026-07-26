@@ -9,7 +9,7 @@ const year = new Date().getFullYear();
 <footer class="site-footer">
   <div class="site-footer__inner">
     <div class="site-footer__brand">
-      <Wordmark variant="full" size={44} />
+      <Wordmark variant="full" height={36} />
       <p class="site-footer__tagline">
         A concept redesign. Not affiliated with, or endorsed by, the Indian Space Research
         Organisation or the Department of Space.
@@ -53,17 +53,29 @@ const year = new Date().getFullYear();
 
   <div class="site-footer__credit">
     <p>
-      Logotype direction inspired by the ISRO rebranding study of{' '}
+      Logotype from the ISRO rebranding study by{' '}
       <a
         href="https://www.behance.net/gallery/91862335/Rebranding-ISRO-Indian-Space-Research-Organisation"
         target="_blank"
         rel="noreferrer">Swarna Manjari</a
-      >. Mark redrawn for this concept — <a href={withBase('/brand')}>full credits</a>.
+      > — used with credit for this concept redesign.
+    </p>
+    <p>
+      3D model by{' '}
+      <a
+        href="https://sketchfab.com/3d-models/isro-gaganyaan-animated-solar-panel-962a218eb4394890bfa55ab1e6b233e7"
+        target="_blank"
+        rel="noreferrer">the3dCartel</a
+      >{' '}
+      on Sketchfab.
+    </p>
+    <p>
+      <a href={withBase('/brand')}>Full credits</a>
     </p>
   </div>
 
   <div class="site-footer__legal">
-    <p class="mono">© {year} — Concept work, portfolio demonstrator</p>
+    <p class="mono">© {year} — Abdul Waheed Khan Sowdagar</p>
     <ul role="list">
       {
         footerMeta.map((link) => (
@@ -127,8 +139,8 @@ const year = new Date().getFullYear();
       transition: color $dur-fast ease, border-color $dur-fast ease;
 
       @include hover {
-        color: var(--saffron);
-        border-color: var(--saffron);
+        color: var(--accent);
+        border-color: var(--accent);
       }
     }
   }
@@ -167,6 +179,8 @@ const year = new Date().getFullYear();
   .site-footer__credit {
     @include shell;
 
+    display: grid;
+    gap: 0.65rem;
     margin-top: clamp(3rem, 7vw, 5rem);
     padding-top: 1.75rem;
     border-top: 1px solid var(--line);
@@ -180,11 +194,11 @@ const year = new Date().getFullYear();
 
     a {
       color: var(--ink-2);
-      border-bottom: 1px solid var(--saffron);
+      border-bottom: 1px solid var(--accent);
       transition: color $dur-fast ease;
 
       @include hover {
-        color: var(--saffron);
+        color: var(--accent);
       }
     }
   }

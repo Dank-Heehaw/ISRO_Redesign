@@ -1,0 +1,259 @@
+---
+import SectionHeader from '../SectionHeader.astro';
+import { withBase } from '../../utils/url';
+
+const autonomous = [
+  { name: 'PRL', full: 'Physical Research Laboratory', href: 'https://www.prl.res.in' },
+  { name: 'NARL', full: 'National Atmospheric Research Laboratory', href: 'https://www.narl.gov.in' },
+  { name: 'NESAC', full: 'North Eastern Space Applications Centre', href: 'https://www.nesac.gov.in' },
+  { name: 'IIST', full: 'Indian Institute of Space Science and Technology', href: 'https://www.iist.ac.in' },
+];
+
+const centres = [
+  { name: 'ISRO HQ', full: 'Headquarters, Bengaluru' },
+  { name: 'VSSC', full: 'Vikram Sarabhai Space Centre' },
+  { name: 'LPSC', full: 'Liquid Propulsion Systems Centre' },
+  { name: 'SDSC SHAR', full: 'Satish Dhawan Space Centre' },
+  { name: 'URSC', full: 'U R Rao Satellite Centre' },
+  { name: 'SAC', full: 'Space Applications Centre' },
+  { name: 'NRSC', full: 'National Remote Sensing Centre' },
+  { name: 'HSFC', full: 'Human Space Flight Centre' },
+  { name: 'IPRC', full: 'ISRO Propulsion Complex' },
+  { name: 'IISU', full: 'ISRO Inertial Systems Unit' },
+  { name: 'ISTRAC', full: 'ISRO Telemetry, Tracking and Command Network' },
+  { name: 'MCF', full: 'Master Control Facility' },
+  { name: 'LEOS', full: 'Laboratory for Electro-Optics Systems' },
+  { name: 'IIRS', full: 'Indian Institute of Remote Sensing' },
+];
+
+const commercial = [
+  {
+    name: 'IN-SPACe',
+    full: 'Indian National Space Promotion and Authorisation Centre',
+    href: 'https://www.inspace.gov.in',
+    blurb: 'Authorises and promotes non-governmental space activities in India.',
+  },
+  {
+    name: 'NSIL',
+    full: 'NewSpace India Limited',
+    href: 'https://www.nsilindia.co.in',
+    blurb: 'The commercial arm of the Department of Space — launches, satellites, and tech transfer.',
+  },
+];
+---
+
+<section class="org">
+  <div class="org__inner">
+    <SectionHeader
+      eyebrow="Organisation"
+      title="Centres, labs, and the commercial layer."
+      lede="Fourteen centres build the hardware. Four autonomous bodies do the science. Two entities open the sector to industry."
+      href="/about"
+      linkLabel="About ISRO"
+    />
+
+    <div class="org__block" data-anim="fade-up">
+      <h3 class="org__label">Autonomous bodies</h3>
+      <ul role="list" class="org__grid org__grid--4">
+        {
+          autonomous.map((item) => (
+            <li>
+              <a class="org-card" href={item.href} target="_blank" rel="noreferrer">
+                <span class="org-card__name">{item.name}</span>
+                <span class="org-card__full">{item.full}</span>
+                <span class="org-card__ext" aria-hidden="true">
+                  ↗
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div class="org__block" data-anim="fade-up">
+      <h3 class="org__label">ISRO Centres &amp; Units</h3>
+      <ul role="list" class="org__grid org__grid--centres">
+        {
+          centres.map((item) => (
+            <li>
+              <a class="org-chip" href={withBase('/about/centres')}>
+                <span class="org-chip__name">{item.name}</span>
+                <span class="org-chip__full">{item.full}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div class="org__block" data-anim="fade-up">
+      <h3 class="org__label">IN-SPACe &amp; NSIL</h3>
+      <ul role="list" class="org__grid org__grid--2">
+        {
+          commercial.map((item) => (
+            <li>
+              <a class="org-card org-card--wide" href={item.href} target="_blank" rel="noreferrer">
+                <span class="org-card__name">{item.name}</span>
+                <span class="org-card__full">{item.full}</span>
+                <span class="org-card__blurb">{item.blurb}</span>
+                <span class="org-card__ext" aria-hidden="true">
+                  ↗
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style lang="scss">
+  @use 'mixins' as *;
+  @use 'tokens' as *;
+
+  .org {
+    padding-block: var(--section-y);
+    border-top: 1px solid var(--line);
+  }
+
+  .org__inner {
+    @include shell;
+  }
+
+  .org__block {
+    margin-top: clamp(2rem, 4vw, 3rem);
+  }
+
+  .org__label {
+    @include eyebrow;
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+
+  .org__grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    overflow: clip;
+  }
+
+  .org__grid--4 {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+  }
+
+  .org__grid--2 {
+    grid-template-columns: 1fr;
+
+    @include from('md') {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .org__grid--centres {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 10.5rem), 1fr));
+  }
+
+  .org-card {
+    @include focus-ring(-3px);
+
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    height: 100%;
+    padding: 1.25rem 1.35rem;
+    background: var(--surface);
+    transition: background-color $dur-fast ease;
+
+    @include hover {
+      background: var(--surface-2);
+
+      .org-card__name {
+        color: var(--accent-lit);
+      }
+
+      .org-card__ext {
+        color: var(--accent);
+        transform: translate(2px, -2px);
+      }
+    }
+  }
+
+  .org-card--wide {
+    gap: 0.45rem;
+    padding: 1.5rem;
+  }
+
+  .org-card__name {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    transition: color $dur-fast ease;
+  }
+
+  .org-card__full {
+    font-size: 0.75rem;
+    line-height: 1.45;
+    color: var(--ink-3);
+  }
+
+  .org-card__blurb {
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1.55;
+    color: var(--ink-2);
+  }
+
+  .org-card__ext {
+    position: absolute;
+    top: 1.15rem;
+    right: 1.15rem;
+    color: var(--ink-3);
+    transition:
+      color $dur-fast ease,
+      transform $dur-base $ease-out-quart;
+  }
+
+  .org-chip {
+    @include focus-ring(-2px);
+
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    height: 100%;
+    padding: 1rem 1.1rem;
+    background: var(--surface);
+    transition: background-color $dur-fast ease;
+
+    @include hover {
+      background: var(--surface-2);
+
+      .org-chip__name {
+        color: var(--accent-lit);
+      }
+    }
+  }
+
+  .org-chip__name {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    letter-spacing: 0.04em;
+    color: var(--ink);
+    transition: color $dur-fast ease;
+  }
+
+  .org-chip__full {
+    font-size: 0.6875rem;
+    line-height: 1.4;
+    color: var(--ink-3);
+  }
+</style>

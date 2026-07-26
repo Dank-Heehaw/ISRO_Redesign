@@ -1,0 +1,74 @@
+---
+/**
+ * Thin interior page shell — keeps stubs and content pages consistent so
+ * every nav destination resolves without a 404.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from './PageHero.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  eyebrow: string;
+  lede?: string;
+}
+
+const { title, description, eyebrow, lede } = Astro.props;
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="page">
+    <div class="page__inner">
+      <PageHero eyebrow={eyebrow} title={title} lede={lede} />
+      <div class="page__body">
+        <slot />
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style lang="scss">
+  @use 'mixins' as *;
+
+  .page {
+    padding-bottom: var(--section-y);
+  }
+
+  .page__inner {
+    @include shell;
+  }
+
+  .page__body {
+    max-width: 72ch;
+    display: grid;
+    gap: 1.25rem;
+    color: var(--ink-2);
+    font-size: var(--step-0);
+    line-height: 1.7;
+
+    :global(h2) {
+      font-size: var(--step-2);
+      margin-top: 1.5rem;
+    }
+
+    :global(h3) {
+      font-size: var(--step-1);
+      margin-top: 1rem;
+    }
+
+    :global(ul) {
+      padding-left: 1.25rem;
+      display: grid;
+      gap: 0.4rem;
+    }
+
+    :global(a) {
+      color: var(--accent-lit);
+      border-bottom: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+    }
+
+    :global(.prose-wide) {
+      max-width: none;
+    }
+  }
+</style>

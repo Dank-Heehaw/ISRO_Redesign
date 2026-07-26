@@ -14,7 +14,7 @@ const missions = defineCollection({
     vehicle: z.string().optional(),
     destination: z.string(),
     summary: z.string(),
-    accent: z.string().default('#ff6b12'),
+    accent: z.string().default('#5eb0ff'),
     stats: z
       // Coerced because YAML reads bare values like `7` as numbers, and stat
       // authors should not have to remember to quote them.
