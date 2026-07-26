@@ -1,0 +1,29 @@
+{
+  "name": "isro-redesign",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "description": "An unofficial concept redesign of the Indian Space Research Organisation website. Portfolio demonstrator.",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@fontsource-variable/inter": "^5.3.0",
+    "@fontsource-variable/jetbrains-mono": "^5.3.0",
+    "@fontsource-variable/space-grotesk": "^5.3.0",
+    "@fontsource/noto-sans-devanagari": "^5.3.0",
+    "astro": "^7.1.3",
+    "gsap": "^3.15.0",
+    "lenis": "^1.3.25",
+    "sass": "^1.102.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.9",
+    "typescript": "^6.0.3"
+  }
+}

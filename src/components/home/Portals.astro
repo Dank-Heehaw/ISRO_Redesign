@@ -1,0 +1,162 @@
+---
+import SectionHeader from '../SectionHeader.astro';
+
+/**
+ * The live site buries these behind a logo carousel. They are some of the most
+ * useful things ISRO publishes, so the redesign gives them plain names and a
+ * sentence each.
+ */
+const portals = [
+  {
+    name: 'Bhuvan',
+    expansion: 'Indian Geo-Platform',
+    blurb: 'Browse and analyse Indian Earth-observation imagery in the browser.',
+    href: 'https://bhuvan.nrsc.gov.in',
+  },
+  {
+    name: 'Bhoonidhi',
+    expansion: 'Earth Observation Data Hub',
+    blurb: 'Search, order and download products from the full EO archive.',
+    href: 'https://bhoonidhi.nrsc.gov.in',
+  },
+  {
+    name: 'MOSDAC',
+    expansion: 'Meteorological & Oceanographic Data',
+    blurb: 'Near-real-time weather and ocean products from INSAT and Oceansat.',
+    href: 'https://mosdac.gov.in',
+  },
+  {
+    name: 'ISSDC',
+    expansion: 'Indian Space Science Data Centre',
+    blurb: 'Archived science data from Chandrayaan, AstroSat, Aditya-L1 and more.',
+    href: 'https://issdc.gov.in',
+  },
+  {
+    name: 'VEDAS',
+    expansion: 'Visualisation of EO Data',
+    blurb: 'Thematic visual analytics built on top of the archive.',
+    href: 'https://vedas.sac.gov.in',
+  },
+  {
+    name: 'NDEM',
+    expansion: 'National Database for Emergency Management',
+    blurb: 'Geospatial decision support during floods, cyclones and fires.',
+    href: 'https://ndem.nrsc.gov.in',
+  },
+];
+---
+
+<section class="portals">
+  <div class="portals__inner">
+    <SectionHeader
+      eyebrow="Open data"
+      title="The archive is public. Most people never find it."
+      lede="Six portals publish everything from raw radar granules to flood-response maps. Here they are with plain names."
+    />
+
+    <ul role="list" class="portals__grid">
+      {
+        portals.map((portal, i) => (
+          <li data-anim="fade-up" data-anim-delay={(i % 3) * 0.06}>
+            <a class="portal" href={portal.href} target="_blank" rel="noreferrer">
+              <span class="portal__head">
+                <span class="portal__name">{portal.name}</span>
+                <span class="portal__ext" aria-hidden="true">
+                  ↗
+                </span>
+              </span>
+              <span class="portal__expansion">{portal.expansion}</span>
+              <span class="portal__blurb">{portal.blurb}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style lang="scss">
+  @use 'mixins' as *;
+  @use 'tokens' as *;
+
+  .portals {
+    padding-block: var(--section-y);
+    border-top: 1px solid var(--line);
+    background: linear-gradient(180deg, var(--surface) 0%, var(--void) 60%);
+  }
+
+  .portals__inner {
+    @include shell;
+  }
+
+  .portals__grid {
+    display: grid;
+    gap: 1px;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    background: var(--line);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    overflow: clip;
+  }
+
+  .portal {
+    @include focus-ring(-3px);
+
+    display: grid;
+    gap: 0.4rem;
+    height: 100%;
+    padding: clamp(1.4rem, 2.6vw, 2rem);
+    background: var(--void);
+    transition: background-color $dur-base ease;
+
+    @include hover {
+      background: var(--surface-2);
+
+      .portal__name {
+        color: var(--saffron-lit);
+      }
+
+      .portal__ext {
+        transform: translate(3px, -3px);
+        color: var(--saffron);
+      }
+    }
+  }
+
+  .portal__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .portal__name {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+    transition: color $dur-fast ease;
+  }
+
+  .portal__ext {
+    color: var(--ink-3);
+    transition:
+      transform $dur-base $ease-out-quart,
+      color $dur-base ease;
+  }
+
+  .portal__expansion {
+    @include eyebrow;
+  }
+
+  .portal__blurb {
+    margin-top: 0.65rem;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--ink-2);
+  }
+</style>

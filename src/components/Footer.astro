@@ -1,0 +1,222 @@
+---
+import Wordmark from './brand/Wordmark.astro';
+import { primaryNav, footerMeta, socialLinks } from '../data/navigation';
+import { withBase } from '../utils/url';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    <div class="site-footer__brand">
+      <Wordmark variant="full" size={44} />
+      <p class="site-footer__tagline">
+        A concept redesign. Not affiliated with, or endorsed by, the Indian Space Research
+        Organisation or the Department of Space.
+      </p>
+      <ul role="list" class="site-footer__social">
+        {
+          socialLinks.map((link) => (
+            <li>
+              <a href={link.href} target="_blank" rel="noreferrer">
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <nav class="site-footer__nav" aria-label="Footer">
+      {
+        primaryNav.map((group) => (
+          <section>
+            <h2 class="site-footer__heading">{group.label}</h2>
+            <ul role="list">
+              {group.links.slice(0, 5).map((link) => (
+                <li>
+                  <a
+                    href={link.external ? link.href : withBase(link.href)}
+                    rel={link.external ? 'noreferrer' : undefined}
+                    target={link.external ? '_blank' : undefined}
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))
+      }
+    </nav>
+  </div>
+
+  <div class="site-footer__credit">
+    <p>
+      Logotype direction inspired by the ISRO rebranding study of{' '}
+      <a
+        href="https://www.behance.net/gallery/91862335/Rebranding-ISRO-Indian-Space-Research-Organisation"
+        target="_blank"
+        rel="noreferrer">Swarna Manjari</a
+      >. Mark redrawn for this concept — <a href={withBase('/brand')}>full credits</a>.
+    </p>
+  </div>
+
+  <div class="site-footer__legal">
+    <p class="mono">© {year} — Concept work, portfolio demonstrator</p>
+    <ul role="list">
+      {
+        footerMeta.map((link) => (
+          <li>
+            <a href={withBase(link.href)}>{link.label}</a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</footer>
+
+<style lang="scss">
+  @use 'mixins' as *;
+  @use 'tokens' as *;
+
+  .site-footer {
+    border-top: 1px solid var(--line);
+    background:
+      radial-gradient(80rem 30rem at 50% 0%, rgb(255 107 18 / 6%), transparent 70%),
+      var(--void);
+    padding-block: clamp(3rem, 7vw, 6rem) 2rem;
+  }
+
+  .site-footer__inner {
+    @include shell;
+
+    display: grid;
+    gap: clamp(2.5rem, 6vw, 5rem);
+
+    @include from('lg') {
+      grid-template-columns: minmax(18rem, 24rem) 1fr;
+    }
+  }
+
+  .site-footer__tagline {
+    margin-top: 1.25rem;
+    max-width: 34ch;
+    font-size: 0.8125rem;
+    line-height: 1.65;
+    color: var(--ink-3);
+  }
+
+  .site-footer__social {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    margin-top: 1.5rem;
+    list-style: none;
+    padding: 0;
+
+    a {
+      @include focus-ring(2px);
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-2);
+      border-bottom: 1px solid var(--line-strong);
+      padding-bottom: 2px;
+      transition: color $dur-fast ease, border-color $dur-fast ease;
+
+      @include hover {
+        color: var(--saffron);
+        border-color: var(--saffron);
+      }
+    }
+  }
+
+  .site-footer__nav {
+    display: grid;
+    gap: 2rem 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+
+    ul {
+      display: grid;
+      gap: 0.4rem;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    a {
+      @include focus-ring(2px);
+      font-size: 0.8125rem;
+      color: var(--ink-3);
+      transition: color $dur-fast ease;
+
+      @include hover {
+        color: var(--ink);
+      }
+    }
+  }
+
+  .site-footer__heading {
+    @include eyebrow;
+    color: var(--ink);
+    margin-bottom: 0.9rem;
+  }
+
+  .site-footer__credit {
+    @include shell;
+
+    margin-top: clamp(3rem, 7vw, 5rem);
+    padding-top: 1.75rem;
+    border-top: 1px solid var(--line);
+
+    p {
+      max-width: 62ch;
+      font-size: 0.8125rem;
+      line-height: 1.7;
+      color: var(--ink-3);
+    }
+
+    a {
+      color: var(--ink-2);
+      border-bottom: 1px solid var(--saffron);
+      transition: color $dur-fast ease;
+
+      @include hover {
+        color: var(--saffron);
+      }
+    }
+  }
+
+  .site-footer__legal {
+    @include shell;
+
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 2rem;
+    font-size: 0.6875rem;
+    color: var(--ink-3);
+
+    ul {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    a {
+      @include focus-ring(2px);
+      transition: color $dur-fast ease;
+
+      @include hover {
+        color: var(--ink);
+      }
+    }
+  }
+</style>

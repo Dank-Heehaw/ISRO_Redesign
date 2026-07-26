@@ -1,0 +1,78 @@
+---
+import { withBase } from '../utils/url';
+
+interface Props {
+  eyebrow: string;
+  title: string;
+  lede?: string;
+  href?: string;
+  linkLabel?: string;
+}
+
+const { eyebrow, title, lede, href, linkLabel = 'View all' } = Astro.props;
+---
+
+<header class="section-header">
+  <div class="section-header__text">
+    <p class="eyebrow" data-anim="fade-up">{eyebrow}</p>
+    <h2 data-anim="split-lines">{title}</h2>
+    {lede && <p class="lede" data-anim="fade-up" data-anim-delay="0.1">{lede}</p>}
+  </div>
+
+  {
+    href && (
+      <a class="section-header__link" href={withBase(href)} data-anim="fade-up" data-anim-delay="0.15">
+        {linkLabel}
+        <span aria-hidden="true">→</span>
+      </a>
+    )
+  }
+</header>
+
+<style lang="scss">
+  @use 'mixins' as *;
+  @use 'tokens' as *;
+
+  .section-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: 1.5rem 3rem;
+    margin-bottom: clamp(2.5rem, 5vw, 4.5rem);
+  }
+
+  .section-header__text {
+    display: grid;
+    gap: 1rem;
+    max-width: 52ch;
+  }
+
+  .section-header__link {
+    @include focus-ring;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding-bottom: 0.35rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink);
+    border-bottom: 1px solid var(--line-strong);
+    transition: border-color $dur-fast ease;
+
+    span {
+      transition: transform $dur-base $ease-out-quart;
+    }
+
+    @include hover {
+      border-color: var(--saffron);
+
+      span {
+        transform: translateX(5px);
+      }
+    }
+  }
+</style>

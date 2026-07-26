@@ -1,0 +1,197 @@
+---
+import { getCollection } from 'astro:content';
+import SectionHeader from '../SectionHeader.astro';
+
+const vehicles = (await getCollection('vehicles')).sort((a, b) => a.data.order - b.data.order);
+const tallest = Math.max(...vehicles.map((v) => v.data.heightM));
+
+// A 1.8 m figure next to the fleet gives the heights a human reference.
+const humanH = (1.8 / tallest) * 100;
+---
+
+<section class="fleet">
+  <div class="fleet__shell">
+    <SectionHeader
+      eyebrow="Launch vehicles"
+      title="Four vehicles, drawn to scale."
+      lede="From a 34-metre small-satellite launcher assembled in days to a 640-tonne heavy lifter being human-rated for crew."
+      href="/launch-vehicles"
+      linkLabel="Full fleet"
+    />
+  </div>
+
+  <div class="fleet__scroller" role="region" aria-label="Launch vehicles compared by height" tabindex="0">
+    <div class="fleet__track">
+      <div class="fleet__human" style={`--h: ${humanH}%`}>
+        <span class="fleet__human-figure" aria-hidden="true"></span>
+        <span class="fleet__human-label mono">1.8 m</span>
+      </div>
+
+      {
+        vehicles.map((v) => (
+          <article class="vehicle" style={`--h: ${(v.data.heightM / tallest) * 100}%`} data-anim="fade-up">
+            <div class="vehicle__column">
+              <svg class="vehicle__silhouette" viewBox="0 0 40 200" preserveAspectRatio="none" aria-hidden="true">
+                <path
+                  d="M20 0 C26 16 30 30 30 44 L30 176 L36 200 L4 200 L10 176 L10 44 C10 30 14 16 20 0 Z"
+                  fill="url(#vehicle-fill)"
+                  stroke="var(--line-strong)"
+                  stroke-width="0.6"
+                  vector-effect="non-scaling-stroke"
+                />
+              </svg>
+              <span class="vehicle__height mono">{v.data.heightM} m</span>
+            </div>
+
+            <div class="vehicle__meta">
+              <h3 class="vehicle__name">{v.data.name}</h3>
+              <p class="vehicle__full">{v.data.fullName}</p>
+              <dl class="vehicle__specs">
+                <div>
+                  <dt>LEO</dt>
+                  <dd>{(v.data.payloadLeoKg / 1000).toFixed(1)} t</dd>
+                </div>
+                <div>
+                  <dt>Stages</dt>
+                  <dd>{v.data.stages}</dd>
+                </div>
+                <div>
+                  <dt>Debut</dt>
+                  <dd>{v.data.firstFlight}</dd>
+                </div>
+              </dl>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+
+  <svg width="0" height="0" aria-hidden="true" focusable="false">
+    <defs>
+      <linearGradient id="vehicle-fill" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#2b3646"></stop>
+        <stop offset="0.55" stop-color="#1a2231"></stop>
+        <stop offset="1" stop-color="#ff6b12" stop-opacity="0.85"></stop>
+      </linearGradient>
+    </defs>
+  </svg>
+</section>
+
+<style lang="scss">
+  @use 'mixins' as *;
+  @use 'tokens' as *;
+
+  .fleet {
+    padding-block: var(--section-y);
+    border-top: 1px solid var(--line);
+  }
+
+  .fleet__shell {
+    @include shell;
+  }
+
+  .fleet__scroller {
+    @include focus-ring(-4px);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--line-strong) transparent;
+  }
+
+  .fleet__track {
+    display: flex;
+    align-items: flex-end;
+    gap: clamp(1.5rem, 4vw, 3.5rem);
+    min-height: 34rem;
+    padding-inline: var(--gutter);
+    padding-block: 1rem 0;
+    width: max-content;
+  }
+
+  .fleet__human {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    height: 26rem;
+    flex: none;
+  }
+
+  .fleet__human-figure {
+    width: 8px;
+    height: max(4px, var(--h));
+    border-radius: 4px 4px 0 0;
+    background: var(--ink-3);
+  }
+
+  .fleet__human-label {
+    font-size: 0.625rem;
+    color: var(--ink-3);
+    white-space: nowrap;
+  }
+
+  .vehicle {
+    display: flex;
+    flex-direction: column;
+    flex: none;
+    width: clamp(9rem, 18vw, 13rem);
+  }
+
+  .vehicle__column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    height: 26rem;
+    gap: 0.6rem;
+  }
+
+  .vehicle__silhouette {
+    width: clamp(2.2rem, 4vw, 3.2rem);
+    height: var(--h);
+    filter: drop-shadow(0 0 26px rgb(255 107 18 / 18%));
+  }
+
+  .vehicle__height {
+    font-size: 0.6875rem;
+    color: var(--ink-2);
+  }
+
+  .vehicle__meta {
+    padding-top: 1.1rem;
+    margin-top: 1rem;
+    border-top: 1px solid var(--line-strong);
+  }
+
+  .vehicle__name {
+    font-size: 1.25rem;
+  }
+
+  .vehicle__full {
+    margin-top: 0.3rem;
+    font-size: 0.75rem;
+    line-height: 1.45;
+    color: var(--ink-3);
+    min-height: 2.2em;
+  }
+
+  .vehicle__specs {
+    display: flex;
+    gap: 1.1rem;
+    margin: 1rem 0 0;
+
+    dt {
+      @include eyebrow;
+      font-size: 0.5625rem;
+    }
+
+    dd {
+      margin: 0.2rem 0 0;
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+      color: var(--ink);
+    }
+  }
+</style>

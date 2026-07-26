@@ -1,0 +1,57 @@
+@use 'mixins' as *;
+
+:root {
+  // Surfaces — a near-black canvas so imagery and the saffron accent carry
+  // all of the colour weight.
+  --void: #04060a;
+  --surface: #0a0e15;
+  --surface-2: #121924;
+  --surface-3: #1b2431;
+
+  --line: rgb(255 255 255 / 9%);
+  --line-strong: rgb(255 255 255 / 18%);
+
+  --ink: #eef3f8;
+  --ink-2: #a6b3c2;
+  --ink-3: #6b7a8c;
+
+  // Accent — the saffron of the national flag, the single hue allowed to shout.
+  --saffron: #ff6b12;
+  --saffron-lit: #ff9a4d;
+  --saffron-deep: #c94c00;
+
+  --azure: #3b9bff;
+  --verdant: #17c26a;
+  --amber: #ffc53d;
+
+  --status-flown: var(--verdant);
+  --status-active: var(--azure);
+  --status-upcoming: var(--saffron);
+
+  --font-display: 'Space Grotesk Variable', 'Space Grotesk', system-ui, sans-serif;
+  --font-body: 'Inter Variable', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, monospace;
+  --font-deva: 'Noto Sans Devanagari', var(--font-body);
+
+  --step--1: #{fluid(12px, 13px)};
+  --step-0: #{fluid(15px, 17px)};
+  --step-1: #{fluid(18px, 22px)};
+  --step-2: #{fluid(22px, 30px)};
+  --step-3: #{fluid(27px, 42px)};
+  --step-4: #{fluid(33px, 60px)};
+  --step-5: #{fluid(40px, 84px)};
+  --step-6: #{fluid(46px, 124px)};
+
+  --gutter: #{fluid(20px, 40px)};
+  --section-y: #{fluid(72px, 168px)};
+  --radius: 3px;
+  --radius-lg: 6px;
+
+  --header-h: 68px;
+
+  @include from('lg') {
+    --header-h: 80px;
+  }
+
+  color-scheme: dark;
+}

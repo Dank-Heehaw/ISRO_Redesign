@@ -1,0 +1,232 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { withBase } from '../../utils/url';
+
+interface Props {
+  mission: CollectionEntry<'missions'>;
+}
+
+const { mission } = Astro.props;
+const { name, summary, stats, accent, destination, vehicle } = mission.data;
+---
+
+<section class="featured" style={`--accent: ${accent}`} data-featured>
+  <div class="featured__sticky">
+    <div class="featured__viz" aria-hidden="true">
+      <div class="featured__orbit featured__orbit--1" data-orbit="1"></div>
+      <div class="featured__orbit featured__orbit--2" data-orbit="2"></div>
+      <div class="featured__orbit featured__orbit--3" data-orbit="3"></div>
+      <div class="featured__body"></div>
+    </div>
+  </div>
+
+  <div class="featured__content">
+    <div class="featured__intro">
+      <p class="eyebrow" data-anim="fade-up">Mission in focus</p>
+      <h2 class="featured__title" data-anim="split-lines">{name}</h2>
+      <p class="lede" data-anim="fade-up" data-anim-delay="0.1">{summary}</p>
+      <a class="featured__cta" href={withBase(`/missions/${mission.id}`)} data-anim="fade-up" data-anim-delay="0.2">
+        Mission profile <span aria-hidden="true">→</span>
+      </a>
+    </div>
+
+    <dl class="featured__stats">
+      <div class="featured__stat" data-anim="fade-up">
+        <dt>Destination</dt>
+        <dd>{destination}</dd>
+      </div>
+      {
+        vehicle && (
+          <div class="featured__stat" data-anim="fade-up" data-anim-delay="0.05">
+            <dt>Vehicle</dt>
+            <dd>{vehicle}</dd>
+          </div>
+        )
+      }
+      {
+        stats.map((stat, i) => (
+          <div class="featured__stat" data-anim="fade-up" data-anim-delay={0.1 + i * 0.05}>
+            <dt>{stat.label}</dt>
+            <dd>{stat.value}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </div>
+</section>
+
+<style lang="scss">
+  @use 'mixins' as *;
+  @use 'tokens' as *;
+
+  .featured {
+    position: relative;
+    padding-block: var(--section-y);
+    background:
+      radial-gradient(70rem 44rem at 20% 40%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 70%),
+      var(--void);
+
+    @include from('lg') {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--gutter);
+      padding-inline: var(--gutter);
+    }
+  }
+
+  .featured__sticky {
+    display: none;
+
+    @include from('lg') {
+      display: block;
+      position: sticky;
+      top: var(--header-h);
+      align-self: start;
+      height: calc(100svh - var(--header-h));
+    }
+  }
+
+  .featured__viz {
+    position: relative;
+    display: grid;
+    place-items: center;
+    height: 100%;
+  }
+
+  .featured__body {
+    width: clamp(9rem, 15vw, 15rem);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 32% 28%, color-mix(in srgb, var(--accent) 70%, #fff 10%), transparent 58%),
+      radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--accent) 42%, #000), #06080d 78%);
+    box-shadow:
+      inset -22px -14px 60px rgb(0 0 0 / 78%),
+      0 0 90px color-mix(in srgb, var(--accent) 26%, transparent);
+  }
+
+  .featured__orbit {
+    position: absolute;
+    border: 1px solid var(--line-strong);
+    border-radius: 50%;
+    rotate: x 72deg;
+    animation: spin 34s linear infinite;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: -4px;
+      left: 50%;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 14px 2px color-mix(in srgb, var(--accent) 65%, transparent);
+    }
+  }
+
+  .featured__orbit--1 {
+    width: clamp(14rem, 24vw, 24rem);
+    aspect-ratio: 1;
+  }
+  .featured__orbit--2 {
+    width: clamp(19rem, 32vw, 32rem);
+    aspect-ratio: 1;
+    animation-duration: 56s;
+    animation-direction: reverse;
+    opacity: 0.7;
+  }
+  .featured__orbit--3 {
+    width: clamp(24rem, 40vw, 40rem);
+    aspect-ratio: 1;
+    animation-duration: 88s;
+    opacity: 0.4;
+  }
+
+  @keyframes spin {
+    to {
+      rotate: x 72deg z 360deg;
+    }
+  }
+
+  @include reduced-motion {
+    .featured__orbit {
+      animation: none;
+    }
+  }
+
+  .featured__content {
+    @include shell;
+
+    display: grid;
+    gap: clamp(3rem, 6vw, 5rem);
+
+    @include from('lg') {
+      max-width: 40rem;
+      padding-inline: 0;
+      align-content: center;
+      min-height: calc(100svh - var(--header-h));
+    }
+  }
+
+  .featured__title {
+    font-size: var(--step-5);
+    margin-block: 0.75rem 1.25rem;
+  }
+
+  .featured__cta {
+    @include focus-ring;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: 1.75rem;
+    padding-bottom: 0.35rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink);
+    border-bottom: 1px solid var(--accent);
+
+    span {
+      transition: transform $dur-base $ease-out-quart;
+    }
+
+    @include hover {
+      span {
+        transform: translateX(5px);
+      }
+    }
+  }
+
+  .featured__stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    gap: 1px;
+    margin: 0;
+    background: var(--line);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    overflow: clip;
+  }
+
+  .featured__stat {
+    padding: 1.1rem 1.25rem;
+    background: var(--surface);
+
+    dt {
+      @include eyebrow;
+      margin-bottom: 0.4rem;
+    }
+
+    dd {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: 1.0625rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+    }
+  }
+</style>

@@ -1,0 +1,66 @@
+---
+import Mark from './Mark.astro';
+
+interface Props {
+  /** `full` adds the Devanagari and English expansions beside the acronym. */
+  variant?: 'compact' | 'full';
+  size?: number;
+  class?: string;
+}
+
+const { variant = 'compact', size = 34, class: className } = Astro.props;
+---
+
+<span class:list={['wordmark', `wordmark--${variant}`, className]}>
+  <Mark size={size} />
+  <span class="wordmark__text">
+    <span class="wordmark__acronym">ISRO</span>
+    {
+      variant === 'full' && (
+        <span class="wordmark__expansion">
+          <span class="deva">भारतीय अंतरिक्ष अनुसंधान संगठन</span>
+          <span>Indian Space Research Organisation</span>
+        </span>
+      )
+    }
+  </span>
+</span>
+
+<style lang="scss">
+  @use 'mixins' as *;
+
+  .wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+  }
+
+  .wordmark__text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .wordmark__acronym {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.32rem;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    color: var(--ink);
+  }
+
+  .wordmark__expansion {
+    display: none;
+    font-size: 0.625rem;
+    line-height: 1.45;
+    letter-spacing: 0.05em;
+    color: var(--ink-3);
+    margin-top: 0.28rem;
+
+    @include from('md') {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+</style>

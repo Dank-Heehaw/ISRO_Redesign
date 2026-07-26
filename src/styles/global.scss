@@ -1,0 +1,65 @@
+@use 'reset';
+@use 'root';
+@use 'typography';
+@use 'mixins' as *;
+
+// Elements the motion layer will reveal start hidden, but only once we know
+// scripting is available — otherwise a JS failure would leave a blank page.
+html.js [data-anim] {
+  will-change: transform, opacity;
+}
+
+html.js [data-anim='fade-up'],
+html.js [data-anim='fade'],
+html.js [data-anim='split-lines'] {
+  opacity: 0;
+}
+
+.split-line-wrap {
+  display: block;
+  overflow: clip;
+}
+
+html.js [data-anim='fade-up'] {
+  transform: translate3d(0, 28px, 0);
+}
+
+html.js [data-anim='clip-up'] > * {
+  transform: translate3d(0, 100%, 0);
+}
+
+html.js [data-anim='clip-up'] {
+  overflow: clip;
+}
+
+@include reduced-motion {
+  html.js [data-anim] {
+    opacity: 1 !important;
+    transform: none !important;
+    will-change: auto;
+  }
+
+  html.js [data-anim='clip-up'] > * {
+    transform: none !important;
+  }
+}
+
+// Scripting may be blocked or fail to load; content must still be readable.
+html.no-js [data-anim] {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+// Lenis owns the scroll position; these are its required host styles.
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-stopped {
+  overflow: clip;
+}

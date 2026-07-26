@@ -1,0 +1,75 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionHeader from '../components/SectionHeader.astro';
+import MissionCard from '../components/MissionCard.astro';
+import Hero from '../components/home/Hero.astro';
+import NextLaunch from '../components/home/NextLaunch.astro';
+import FeaturedMission from '../components/home/FeaturedMission.astro';
+import Fleet from '../components/home/Fleet.astro';
+import Numbers from '../components/home/Numbers.astro';
+import Newsroom from '../components/home/Newsroom.astro';
+import Portals from '../components/home/Portals.astro';
+
+const missions = (await getCollection('missions')).sort((a, b) => a.data.order - b.data.order);
+const focus = missions.find((m) => m.id === 'gaganyaan') ?? missions[0]!;
+const grid = missions.filter((m) => m.id !== focus.id).slice(0, 6);
+---
+
+<BaseLayout
+  title="ISRO"
+  description="A concept redesign of the Indian Space Research Organisation website — missions, launch vehicles and open data, rebuilt around what people actually come to find."
+  bleedTop
+>
+  <Hero />
+  <NextLaunch />
+  <FeaturedMission mission={focus} />
+
+  <section class="missions-section">
+    <div class="missions-section__inner">
+      <SectionHeader
+        eyebrow="Missions"
+        title="In orbit, in transit, in build."
+        lede="Eight decades of ambition compressed into fifty years of hardware — from a rocket carried on a bicycle to a lander at the lunar south pole."
+        href="/missions"
+        linkLabel="All missions"
+      />
+
+      <div class="missions-section__grid">
+        {grid.map((mission, i) => <MissionCard mission={mission} size={i === 0 ? 'wide' : 'default'} />)}
+      </div>
+    </div>
+  </section>
+
+  <Fleet />
+  <Numbers />
+  <Newsroom />
+  <Portals />
+</BaseLayout>
+
+<style lang="scss">
+  @use 'mixins' as *;
+
+  .missions-section {
+    padding-block: var(--section-y);
+    border-top: 1px solid var(--line);
+  }
+
+  .missions-section__inner {
+    @include shell;
+  }
+
+  .missions-section__grid {
+    display: grid;
+    gap: clamp(1rem, 2vw, 1.5rem);
+    grid-template-columns: 1fr;
+
+    @include from('md') {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    @include from('xl') {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>

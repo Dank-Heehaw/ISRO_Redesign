@@ -1,0 +1,201 @@
+---
+/**
+ * Placeholder manifest entry. Swap for a real feed when one exists; the
+ * countdown reads the ISO string off the DOM so nothing else needs to change.
+ */
+const nextLaunch = {
+  mission: 'Gaganyaan G1',
+  vehicle: 'HLVM3-G1',
+  site: 'Second Launch Pad · SDSC SHAR, Sriharikota',
+  window: '18 September 2026 · 09:42 IST',
+  iso: '2026-09-18T04:12:00Z',
+  payload: 'Uncrewed crew module with Vyommitra',
+};
+---
+
+<section class="next-launch" id="next-launch">
+  <div class="next-launch__inner">
+    <div class="next-launch__meta">
+      <p class="eyebrow" data-anim="fade-up">Next launch</p>
+      <h2 class="next-launch__mission" data-anim="fade-up" data-anim-delay="0.05">
+        {nextLaunch.mission}
+      </h2>
+      <dl class="next-launch__facts" data-anim="fade-up" data-anim-delay="0.12">
+        <div>
+          <dt>Vehicle</dt>
+          <dd>{nextLaunch.vehicle}</dd>
+        </div>
+        <div>
+          <dt>Payload</dt>
+          <dd>{nextLaunch.payload}</dd>
+        </div>
+        <div>
+          <dt>Site</dt>
+          <dd>{nextLaunch.site}</dd>
+        </div>
+        <div>
+          <dt>Window</dt>
+          <dd>{nextLaunch.window}</dd>
+        </div>
+      </dl>
+    </div>
+
+    <div class="clock" data-countdown={nextLaunch.iso} data-anim="fade-up" data-anim-delay="0.18">
+      <div class="clock__unit">
+        <span class="clock__value mono" data-unit="days">—</span>
+        <span class="clock__label">Days</span>
+      </div>
+      <div class="clock__unit">
+        <span class="clock__value mono" data-unit="hours">—</span>
+        <span class="clock__label">Hours</span>
+      </div>
+      <div class="clock__unit">
+        <span class="clock__value mono" data-unit="minutes">—</span>
+        <span class="clock__label">Min</span>
+      </div>
+      <div class="clock__unit">
+        <span class="clock__value mono" data-unit="seconds">—</span>
+        <span class="clock__label">Sec</span>
+      </div>
+      <p class="clock__status" data-countdown-status role="status"></p>
+    </div>
+  </div>
+</section>
+
+<style lang="scss">
+  @use 'mixins' as *;
+  @use 'tokens' as *;
+
+  .next-launch {
+    border-block: 1px solid var(--line);
+    background: linear-gradient(180deg, var(--surface) 0%, var(--void) 100%);
+  }
+
+  .next-launch__inner {
+    @include shell;
+
+    display: grid;
+    gap: clamp(2rem, 5vw, 4rem);
+    padding-block: clamp(2.5rem, 5vw, 4.5rem);
+    align-items: center;
+
+    @include from('lg') {
+      grid-template-columns: 1fr auto;
+    }
+  }
+
+  .next-launch__mission {
+    font-size: var(--step-3);
+    margin-block: 0.5rem 1.75rem;
+  }
+
+  .next-launch__facts {
+    display: grid;
+    gap: 1.25rem 2.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    max-width: 46rem;
+    margin: 0;
+
+    dt {
+      @include eyebrow;
+      margin-bottom: 0.3rem;
+    }
+
+    dd {
+      margin: 0;
+      font-size: 0.875rem;
+      color: var(--ink);
+      line-height: 1.45;
+    }
+  }
+
+  .clock {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    overflow: clip;
+
+    @include from('lg') {
+      min-width: 26rem;
+    }
+  }
+
+  .clock__unit {
+    display: grid;
+    gap: 0.35rem;
+    justify-items: center;
+    padding: clamp(1rem, 2.4vw, 1.6rem) clamp(0.5rem, 1.6vw, 1.4rem);
+    background: var(--surface-2);
+  }
+
+  .clock__value {
+    font-size: clamp(1.85rem, 4.6vw, 3.1rem);
+    font-weight: 500;
+    line-height: 1;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .clock__label {
+    @include eyebrow;
+    font-size: 0.625rem;
+  }
+
+  .clock__status {
+    grid-column: 1 / -1;
+    padding: 0.75rem 1rem;
+    background: var(--surface);
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-align: center;
+    color: var(--saffron);
+
+    &:empty {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  const clock = document.querySelector<HTMLElement>('[data-countdown]');
+
+  if (clock) {
+    const target = new Date(clock.dataset.countdown ?? '').getTime();
+    const status = clock.querySelector<HTMLElement>('[data-countdown-status]');
+    const units = {
+      days: clock.querySelector<HTMLElement>('[data-unit="days"]'),
+      hours: clock.querySelector<HTMLElement>('[data-unit="hours"]'),
+      minutes: clock.querySelector<HTMLElement>('[data-unit="minutes"]'),
+      seconds: clock.querySelector<HTMLElement>('[data-unit="seconds"]'),
+    };
+
+    const pad = (n: number) => String(n).padStart(2, '0');
+
+    const tick = () => {
+      const remaining = target - Date.now();
+
+      if (Number.isNaN(target)) return;
+
+      if (remaining <= 0) {
+        Object.values(units).forEach((el) => el && (el.textContent = '00'));
+        if (status) status.textContent = 'Launch window open';
+        window.clearInterval(timer);
+        return;
+      }
+
+      const s = Math.floor(remaining / 1000);
+      if (units.days) units.days.textContent = pad(Math.floor(s / 86400));
+      if (units.hours) units.hours.textContent = pad(Math.floor((s % 86400) / 3600));
+      if (units.minutes) units.minutes.textContent = pad(Math.floor((s % 3600) / 60));
+      if (units.seconds) units.seconds.textContent = pad(s % 60);
+    };
+
+    tick();
+    const timer = window.setInterval(tick, 1000);
+  }
+</script>
