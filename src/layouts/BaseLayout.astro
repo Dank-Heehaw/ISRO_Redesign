@@ -5,6 +5,7 @@ import '@fontsource-variable/jetbrains-mono';
 import '@fontsource/noto-sans-devanagari/400.css';
 import '../styles/global.scss';
 
+import Analytics from '@vercel/analytics/astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { withBase } from '../utils/url';
@@ -52,6 +53,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
       <slot />
     </main>
     <Footer />
+    <Analytics />
 
     <script>
       import { initMotion } from '../scripts/motion';
