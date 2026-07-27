@@ -11,15 +11,21 @@ const tallest = Math.max(...vehicles.map((v) => v.data.heightM));
 
 <BaseLayout
   title="Launch Vehicles"
-  description="PSLV, GSLV, LVM3 and SSLV — India's launch fleet, compared to scale."
+  description="PSLV, GSLV Mk II, LVM3 and SSLV — India's operational launch fleet, with heights, stages, and payload figures drawn from ISRO's published specs."
 >
   <div class="page">
     <div class="page__inner">
       <PageHero
         eyebrow="Launch vehicles"
-        title="Four vehicles, drawn to scale."
-        lede="From a small-satellite launcher assembled in days to a heavy lifter being human-rated for crew."
+        title="Four ways to orbit."
+        lede="From a smallsat launcher built for quick campaigns to a heavy lifter rated for four-tonne GTO — the operational fleet that carries Indian and commercial payloads."
       />
+
+      <p class="page__intro">
+        Specs below follow ISRO's published vehicle pages: height, liftoff mass, stage count, and
+        stated LEO / GTO (or sub-GTO) capacity. Exact performance varies by configuration and
+        mission design.
+      </p>
 
       <div class="fleet">
         {
@@ -39,11 +45,11 @@ const tallest = Math.max(...vehicles.map((v) => v.data.heightM));
                   </div>
                   <div>
                     <dt>Liftoff mass</dt>
-                    <dd>{v.data.liftoffMassT} t</dd>
+                    <dd>{v.data.liftoffMassT === 120 ? '~120 t' : `${v.data.liftoffMassT} t`}</dd>
                   </div>
                   <div>
                     <dt>LEO payload</dt>
-                    <dd>{(v.data.payloadLeoKg / 1000).toFixed(1)} t</dd>
+                    <dd>{v.data.payloadLeoKg >= 1000 ? `${v.data.payloadLeoKg / 1000} t` : `${v.data.payloadLeoKg} kg`}</dd>
                   </div>
                   <div>
                     <dt>Stages</dt>
@@ -57,6 +63,14 @@ const tallest = Math.max(...vehicles.map((v) => v.data.heightM));
                     <dt>Status</dt>
                     <dd>{v.data.status}</dd>
                   </div>
+                  {
+                    v.data.payloadGtoKg != null && (
+                      <div>
+                        <dt>{v.id === 'pslv' ? 'Sub-GTO' : 'GTO payload'}</dt>
+                        <dd>{(v.data.payloadGtoKg / 1000).toFixed(2)} t</dd>
+                      </div>
+                    )
+                  }
                 </dl>
               </div>
             </article>
@@ -80,6 +94,14 @@ const tallest = Math.max(...vehicles.map((v) => v.data.heightM));
 
   .page__inner {
     @include shell;
+  }
+
+  .page__intro {
+    max-width: 62ch;
+    margin: 0 0 clamp(2rem, 4vw, 3rem);
+    color: var(--ink-3);
+    font-size: 0.9375rem;
+    line-height: 1.6;
   }
 
   .fleet {
