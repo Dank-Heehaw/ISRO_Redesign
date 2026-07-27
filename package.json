@@ -4,6 +4,9 @@
   "version": "0.1.0",
   "private": true,
   "description": "An unofficial concept redesign of the Indian Space Research Organisation website. Portfolio demonstrator.",
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",

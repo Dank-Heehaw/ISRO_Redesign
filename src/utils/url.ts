@@ -1,9 +1,9 @@
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 /**
- * Astro does not rewrite hrefs written in templates, so every internal link has
- * to be prefixed with the GitHub Pages subpath. External and hash links pass
- * through untouched.
+ * Astro does not rewrite hrefs written in templates, so every internal link is
+ * prefixed with `import.meta.env.BASE_URL` (root on Vercel; a subpath if you
+ * ever re-enable GitHub Pages). External and hash links pass through untouched.
  */
 export function withBase(path: string): string {
   if (/^([a-z]+:)?\/\//i.test(path) || path.startsWith('#') || path.startsWith('mailto:')) {

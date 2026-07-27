@@ -1,11 +1,11 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 
-// GitHub Pages serves this project from a repository subpath, so `base` must be
-// set for every generated URL and asset reference to resolve.
+// Primary host is Vercel (root path). GitHub Pages project sites need a
+// matching `base` of `/ISRO_Redesign` if you re-enable that workflow.
 export default defineConfig({
-  site: 'https://dank-heehaw.github.io',
-  base: '/ISRO_Redesign',
+  site: 'https://isro-redesign.vercel.app',
+  base: '/',
   trailingSlash: 'ignore',
   build: {
     format: 'directory',

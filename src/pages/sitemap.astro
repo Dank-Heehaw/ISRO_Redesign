@@ -10,41 +10,109 @@ import { withBase } from '../utils/url';
   description="Human-readable sitemap for the ISRO redesign concept."
   lede="Every internal destination in this demonstrator."
 >
-  {
-    primaryNav.map((group) => (
-      <section>
-        <h2>
-          <a href={withBase(group.href)}>{group.label}</a>
-        </h2>
-        <ul>
-          {group.links.map((link) => (
+  <div class="sitemap prose-wide">
+    {
+      primaryNav.map((group) => (
+        <section class="sitemap__group">
+          <h2 class="sitemap__heading">
+            <a href={withBase(group.href)}>{group.label}</a>
+          </h2>
+          <ul class="sitemap__list" role="list">
+            {group.links.map((link) => (
+              <li>
+                {link.external ? (
+                  <a href={link.href} target="_blank" rel="noreferrer">
+                    {link.label}
+                  </a>
+                ) : (
+                  <a href={withBase(link.href)}>{link.label}</a>
+                )}
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))
+    }
+    <section class="sitemap__group">
+      <h2 class="sitemap__heading">Meta</h2>
+      <ul class="sitemap__list" role="list">
+        {
+          footerMeta.map((link) => (
             <li>
-              {link.external ? (
-                <a href={link.href} target="_blank" rel="noreferrer">
-                  {link.label}
-                </a>
-              ) : (
-                <a href={withBase(link.href)}>{link.label}</a>
-              )}
+              <a href={withBase(link.href)}>{link.label}</a>
             </li>
-          ))}
-        </ul>
-      </section>
-    ))
-  }
-  <section>
-    <h2>Meta</h2>
-    <ul>
-      {
-        footerMeta.map((link) => (
-          <li>
-            <a href={withBase(link.href)}>{link.label}</a>
-          </li>
-        ))
-      }
-      <li>
-        <a href={withBase('/brand')}>Brand &amp; credits</a>
-      </li>
-    </ul>
-  </section>
+          ))
+        }
+        <li>
+          <a href={withBase('/brand')}>Brand &amp; credits</a>
+        </li>
+      </ul>
+    </section>
+  </div>
 </InteriorPage>
+
+<style lang="scss">
+  @use 'mixins' as *;
+  @use 'tokens' as *;
+
+  .sitemap {
+    display: grid;
+    gap: clamp(2rem, 4vw, 3.25rem);
+    max-width: 52rem;
+  }
+
+  .sitemap__group {
+    display: grid;
+    gap: 1.15rem;
+    padding-block: clamp(0.5rem, 1.5vw, 1rem) clamp(1.75rem, 3.5vw, 2.5rem);
+    border-bottom: 1px solid var(--line);
+
+    &:first-child {
+      padding-top: 0;
+    }
+
+    &:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+  }
+
+  .sitemap__heading {
+    margin: 0;
+    padding-block: 0.35rem 0.15rem;
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+    color: var(--ink);
+  }
+
+  .sitemap__list {
+    display: grid;
+    gap: 0.65rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  // Override InteriorPage's default `li a` underline treatment.
+  .sitemap :global(li a),
+  .sitemap__heading :global(a) {
+    text-decoration: none;
+    border-bottom: none;
+    transition: color $dur-fast ease;
+
+    @include hover {
+      color: var(--accent-lit);
+    }
+  }
+
+  .sitemap :global(li a) {
+    color: var(--ink-2);
+  }
+
+  .sitemap__heading :global(a) {
+    color: inherit;
+  }
+</style>

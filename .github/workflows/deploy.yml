@@ -1,8 +1,9 @@
 name: Deploy to GitHub Pages
 
+# Site primary host is now Vercel (root URL). Keep this workflow for optional
+# GitHub Pages deploys — if you use it, set `base: '/ISRO_Redesign'` in
+# astro.config.mjs first so asset and link paths resolve.
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 # Allow one concurrent deployment, and let a newer push supersede a running one.
