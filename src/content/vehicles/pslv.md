@@ -9,13 +9,15 @@ payloadGtoKg: 1425
 firstFlight: '1993'
 status: operational
 summary: >-
-  The workhorse. Alternating solid and liquid stages, flown for three decades,
-  and the vehicle that sent spacecraft to the Moon, Mars and L1.
+  ISRO's workhorse: four alternating solid and liquid stages, XL liftoff mass
+  about 320 t, and a long record of polar, SSO, and rideshare missions — including
+  lunar, Mars, and L1 departures.
 order: 1
 ---
 
-PSLV's four-stage alternating solid–liquid architecture is unusual, and it is
-what gives the vehicle its range of behaviour: the liquid fourth stage can be
-restarted and precisely trimmed, which is why PSLV became the launcher of choice
-for multi-satellite rideshares and for injecting spacecraft onto escape
-trajectories it could not reach in a single burn.
+PSLV is a four-stage vehicle (overall height 44.4 m in the XL configuration) whose
+alternating solid–liquid architecture gives it unusual flexibility. ISRO lists about
+1,750 kg to a 600 km Sun-synchronous polar orbit and 1,425 kg to sub-GTO; published
+LEO capacity is around 3.8 t. The restartable liquid fourth stage is why PSLV became
+the launcher of choice for multi-satellite rideshares and for injecting spacecraft onto
+escape trajectories that need a precise final burn.

@@ -25,7 +25,7 @@ const aspect: Record<string, string> = {
     <SectionHeader
       eyebrow="Launch vehicles"
       title="Four vehicles, drawn to scale."
-      lede="All four stand on one ground line. The left ruler is metres — heights, mass, and LEO payload are shown to the same relative scale."
+      lede="All four stand on one ground line. Heights follow ISRO’s published figures; mass and LEO bars are relative within this fleet."
       href="/launch-vehicles"
       linkLabel="Full fleet"
     />
@@ -76,16 +76,16 @@ const aspect: Record<string, string> = {
                     <dl class="fleet__specs">
                       <div>
                         <dt>Liftoff mass</dt>
-                        <dd>{v.data.liftoffMassT} t</dd>
+                        <dd>{v.id === 'sslv' ? '~120 t' : `${v.data.liftoffMassT} t`}</dd>
                       </div>
                       <div>
                         <dt>LEO payload</dt>
-                        <dd>{(v.data.payloadLeoKg / 1000).toFixed(1)} t</dd>
+                        <dd>{v.data.payloadLeoKg / 1000} t</dd>
                       </div>
                       {
                         v.data.payloadGtoKg != null && (
                           <div>
-                            <dt>GTO payload</dt>
+                            <dt>{v.id === 'pslv' ? 'Sub-GTO' : 'GTO payload'}</dt>
                             <dd>{(v.data.payloadGtoKg / 1000).toFixed(2)} t</dd>
                           </div>
                         )

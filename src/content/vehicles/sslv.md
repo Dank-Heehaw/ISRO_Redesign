@@ -8,12 +8,15 @@ payloadLeoKg: 500
 firstFlight: '2022'
 status: operational
 summary: >-
-  Three solid stages and a liquid velocity-trimming module, designed to be
-  assembled in days by a small team rather than weeks by a large one.
+  A compact launcher (~120 t, 34 m) with three solid stages and a liquid velocity
+  trimming module, sized for ~500 kg to a 500 km orbit and faster campaign turnaround.
 order: 4
 ---
 
-SSLV optimises for turnaround rather than capability. All-solid stages need no
-propellant loading infrastructure, so launch campaigns compress from weeks to
-days. Its technology has been transferred to industry, and a dedicated launch
-complex is under construction at Kulasekarapattinam in Tamil Nadu.
+SSLV is configured for launch-on-demand rather than maximum payload. ISRO describes
+three solid propulsion stages plus a liquid Velocity Trimming Module (VTM) as the
+terminal stage: about 2 m in diameter, 34 m long, and ~120 t at liftoff, with capacity
+for a single satellite up to ~500 kg in a 500 km planar orbit. All-solid main stages
+reduce propellant-loading infrastructure, so campaigns can compress from weeks toward
+days. Industry transfer is underway, with a dedicated launch complex under construction
+at Kulasekarapattinam in Tamil Nadu. First developmental flight was in 2022.
