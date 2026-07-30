@@ -1,7 +1,8 @@
 ---
 /**
- * ThemeToggle: switches between the custom redesign and a UX4G-inspired
- * light government theme. Preference is stored in localStorage.
+ * ThemeToggle: switches between the custom redesign and the UX4G government
+ * design-system look (https://www.ux4g.gov.in/?lang=en). Preference in localStorage.
+ * Chrome always matches the UX4G control style so size/shape stay stable across themes.
  */
 ---
 
@@ -25,22 +26,28 @@
   @use 'mixins' as *;
   @use 'tokens' as *;
 
+  // Fixed footprint — same in redesign + UX4G so the header never jumps.
   .theme-toggle {
     @include focus-ring;
 
+    box-sizing: border-box;
     display: inline-flex;
     align-items: center;
-    gap: 0.55rem;
-    padding: 0.35rem 0.55rem 0.35rem 0.4rem;
+    gap: 0.5rem;
+    min-height: 2.25rem;
+    min-width: 7.75rem;
+    padding: 0.4rem 0.7rem 0.4rem 0.55rem;
     border: 1px solid var(--line-strong);
-    border-radius: 999px;
-    background: rgb(255 255 255 / 4%);
+    border-radius: 0.25rem;
+    background: var(--surface, rgb(255 255 255 / 6%));
     color: var(--ink-2);
     cursor: pointer;
+    font: inherit;
     transition:
       border-color $dur-fast ease,
       background-color $dur-fast ease,
-      color $dur-fast ease;
+      color $dur-fast ease,
+      box-shadow $dur-fast ease;
 
     @include hover {
       border-color: var(--accent);
@@ -48,8 +55,10 @@
     }
 
     &[aria-pressed='true'] {
-      border-color: var(--accent);
-      background: color-mix(in srgb, var(--accent) 12%, transparent);
+      border-color: #4a2bc2;
+      background: color-mix(in srgb, #4a2bc2 10%, var(--surface, #fff));
+      color: #301c7d;
+      box-shadow: 0 0 0 3px rgb(74 43 194 / 18%);
     }
   }
 
@@ -57,10 +66,10 @@
     position: relative;
     width: 1.85rem;
     height: 1rem;
-    border-radius: 999px;
-    background: var(--surface-3);
+    flex: none;
+    border-radius: 0.125rem;
+    background: var(--surface-3, rgb(255 255 255 / 8%));
     border: 1px solid var(--line);
-    flex-shrink: 0;
   }
 
   .theme-toggle__thumb {
@@ -69,8 +78,8 @@
     left: 1px;
     width: 0.65rem;
     height: 0.65rem;
-    border-radius: 50%;
-    background: var(--accent);
+    border-radius: 0.1rem;
+    background: #4a2bc2;
     transition: transform $dur-base $ease-out-quart;
   }
 
@@ -79,23 +88,37 @@
   }
 
   .theme-toggle__label {
+    flex: 1 1 auto;
+    min-width: 4.25rem;
     font-size: 0.625rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     white-space: nowrap;
+    text-align: left;
   }
 
-  [data-theme='ux4g'] .theme-toggle {
-    border-radius: var(--radius);
-    background: var(--surface);
+  @include upto('md') {
+    .theme-toggle {
+      min-width: 2.85rem;
+      padding-inline: 0.5rem;
+    }
+
+    .theme-toggle__label {
+      min-width: 0;
+    }
   }
 
-  [data-theme='ux4g'] .theme-toggle__track {
-    border-radius: 2px;
-  }
+  // Dark redesign canvas: keep the same geometry, just darker fill.
+  :root:not([data-theme='ux4g']) .theme-toggle {
+    background: rgb(255 255 255 / 6%);
+    border-color: var(--line-strong);
+    color: var(--ink-2);
 
-  [data-theme='ux4g'] .theme-toggle__thumb {
-    border-radius: 2px;
+    &[aria-pressed='true'] {
+      color: var(--accent-lit);
+      background: color-mix(in srgb, #4a2bc2 22%, transparent);
+      box-shadow: 0 0 0 3px rgb(74 43 194 / 28%);
+    }
   }
 </style>
 
@@ -121,7 +144,7 @@
     else root.removeAttribute('data-theme');
 
     const meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute('content', isUx ? '#f4f6f9' : '#04060a');
+    if (meta) meta.setAttribute('content', isUx ? '#fafafa' : '#04060a');
 
     buttons().forEach((btn) => {
       btn.setAttribute('aria-pressed', String(isUx));

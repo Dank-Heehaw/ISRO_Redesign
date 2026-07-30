@@ -51,6 +51,10 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
       title="Missions (concept RSS)"
       href={withBase('/rss/missions.xml')}
     />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+Display:wght@400;500;600;700&family=Noto+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap"
+    />
     <meta name="theme-color" content="#04060a" />
 
     <meta property="og:type" content="website" />
@@ -67,7 +71,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
         if (localStorage.getItem('isro-theme') === 'ux4g') {
           document.documentElement.setAttribute('data-theme', 'ux4g');
           var meta = document.querySelector('meta[name="theme-color"]');
-          if (meta) meta.setAttribute('content', '#f4f6f9');
+          if (meta) meta.setAttribute('content', '#fafafa');
         }
       } catch (e) {}
     </script>
