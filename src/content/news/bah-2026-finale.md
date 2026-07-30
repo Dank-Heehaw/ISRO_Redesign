@@ -1,5 +1,5 @@
 ---
-title: Bharatiya Antariksh Hackathon 2026: teams shortlisted for grand finale
+title: "Bharatiya Antariksh Hackathon 2026: teams shortlisted for grand finale"
 date: 2026-07-14
 type: outreach
 summary: >-
