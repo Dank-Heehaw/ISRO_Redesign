@@ -7,10 +7,10 @@ launchDate: 2013-11-05
 vehicle: PSLV-C25
 destination: Mars Orbit
 summary: >-
-  Mangalyaan reached Mars on the first attempt — something no other space agency
-  had managed — on a budget smaller than the film Gravity.
+  Mangalyaan reached Mars on the first attempt, something no other space agency
+  had managed, on a budget smaller than the film Gravity.
 accent: '#e2603a'
-order: 5
+order: 7
 stats:
   - label: Orbit insertion
     value: 24 Sep 2014
@@ -20,6 +20,11 @@ stats:
     value: 8 years
   - label: Payload mass
     value: 15 kg
+dataLinks:
+  - label: ISSDC science archive
+    href: https://issdc.gov.in
+  - label: Mars Orbiter Mission (isro.gov.in)
+    href: https://www.isro.gov.in/MarsOrbiterMissionHomepage.html
 ---
 
 The Mars Orbiter Mission was designed as a technology demonstrator, which is the
@@ -28,7 +33,7 @@ first attempt had defeated the Soviet, American, European and Japanese programme
 at least once each.
 
 PSLV-C25 could not send it to Mars directly, so the spacecraft raised its own
-orbit around Earth over six manoeuvres before the trans-Mars injection burn — a
+orbit around Earth over six manoeuvres before the trans-Mars injection burn: a
 slower path chosen because it fit the vehicle available.
 
 Its five instruments totalled 15 kg. The Mars Colour Camera returned full-disc

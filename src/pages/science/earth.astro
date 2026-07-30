@@ -7,11 +7,24 @@ import { withBase } from '../../utils/url';
   title="Earth Science"
   eyebrow="Science"
   description="Climate, cryosphere, agriculture and disaster response from India's Earth-observation constellation."
-  lede="How NISAR, Cartosat, Oceansat and INSAT turn orbit into maps people can use."
+  lede="How NISAR, Cartosat, Resourcesat, Oceansat and INSAT turn orbit into maps people can use."
 >
   <p>
-    Earth observation is the quiet majority of the programme — crop estimates, flood extents, forest
+    Earth observation is the quiet majority of the programme: crop estimates, flood extents, forest
     fire mapping, and soil moisture products released through Bhoonidhi and Bhuvan.
   </p>
-  <p><a href={withBase('/missions?category=earth')}>Earth missions →</a></p>
+  <h2>Where to get the data</h2>
+  <ul>
+    <li><a href="https://bhuvan.nrsc.gov.in" target="_blank" rel="noreferrer">Bhuvan</a></li>
+    <li><a href="https://bhoonidhi.nrsc.gov.in" target="_blank" rel="noreferrer">Bhoonidhi</a></li>
+    <li><a href="https://mosdac.gov.in" target="_blank" rel="noreferrer">MOSDAC</a></li>
+    <li><a href="https://vedas.sac.gov.in" target="_blank" rel="noreferrer">VEDAS</a></li>
+  </ul>
+  <p>
+    <a href={withBase('/missions?category=earth')}>Earth mission profiles</a>
+    {' · '}
+    <a href={withBase('/missions/constellations#eo')}>EO constellation table</a>
+    {' · '}
+    <a href={withBase('/missions/constellations#geo')}>GEO communications &amp; met</a>
+  </p>
 </InteriorPage>

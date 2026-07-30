@@ -1,6 +1,6 @@
 ---
 import '@fontsource-variable/space-grotesk';
-import '@fontsource-variable/inter';
+import '@fontsource-variable/ibm-plex-sans';
 import '@fontsource-variable/jetbrains-mono';
 import '@fontsource/noto-sans-devanagari/400.css';
 import '../styles/global.scss';
@@ -18,7 +18,7 @@ interface Props {
 }
 
 const { title, description, bleedTop = false } = Astro.props;
-const fullTitle = title === 'ISRO' ? title : `${title} — ISRO`;
+const fullTitle = title === 'ISRO' ? `${title} (concept redesign)` : `${title} · ISRO redesign`;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 ---
 
@@ -29,8 +29,28 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
+    <meta
+      name="robots"
+      content="index,follow,max-image-preview:large"
+    />
+    <meta
+      name="author"
+      content="Unofficial fan concept redesign — not affiliated with ISRO"
+    />
     <link rel="canonical" href={canonical} />
     <link rel="icon" href={withBase('/favicon.svg')} type="image/svg+xml" />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="Press & updates (concept RSS)"
+      href={withBase('/rss.xml')}
+    />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="Missions (concept RSS)"
+      href={withBase('/rss/missions.xml')}
+    />
     <meta name="theme-color" content="#04060a" />
 
     <meta property="og:type" content="website" />
@@ -39,10 +59,17 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
     <meta property="og:url" content={canonical} />
     <meta name="twitter:card" content="summary_large_image" />
 
-    <!-- Swap the no-js class before first paint so reveal targets never flash. -->
+    <!-- Theme + no-js before first paint: avoid flash of wrong theme / hidden reveals. -->
     <script is:inline>
       document.documentElement.classList.remove('no-js');
       document.documentElement.classList.add('js');
+      try {
+        if (localStorage.getItem('isro-theme') === 'ux4g') {
+          document.documentElement.setAttribute('data-theme', 'ux4g');
+          var meta = document.querySelector('meta[name="theme-color"]');
+          if (meta) meta.setAttribute('content', '#f4f6f9');
+        }
+      } catch (e) {}
     </script>
   </head>
 

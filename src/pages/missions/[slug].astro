@@ -14,7 +14,7 @@ export async function getStaticPaths() {
 
 const { mission } = Astro.props;
 const { Content } = await render(mission);
-const { name, summary, category, status, destination, vehicle, launchDate, stats, accent } =
+const { name, summary, category, status, destination, vehicle, launchDate, stats, accent, dataLinks } =
   mission.data;
 
 const statusLabel: Record<string, string> = {
@@ -71,6 +71,26 @@ const dateFmt = launchDate
         }
       </dl>
 
+      {
+        dataLinks.length > 0 && (
+          <section class="mission__data" aria-labelledby="mission-data-heading">
+            <h2 id="mission-data-heading" class="mission__data-title">
+              Access the data
+            </h2>
+            <ul role="list" class="mission__data-list">
+              {dataLinks.map((link) => (
+                <li>
+                  <a href={link.href} target="_blank" rel="noreferrer">
+                    {link.label}
+                    <span aria-hidden="true"> ↗</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+
       <div class="mission__body">
         <Content />
       </div>
@@ -80,6 +100,7 @@ const dateFmt = launchDate
 
 <style lang="scss">
   @use 'mixins' as *;
+  @use 'tokens' as *;
 
   .mission {
     padding-bottom: var(--section-y);
@@ -110,7 +131,7 @@ const dateFmt = launchDate
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
     gap: 1px;
-    margin: 0 0 clamp(2rem, 4vw, 3rem);
+    margin: 0 0 clamp(1.5rem, 3vw, 2.25rem);
     background: var(--line);
     border: 1px solid var(--line);
     border-radius: var(--radius-lg);
@@ -134,6 +155,39 @@ const dateFmt = launchDate
     }
   }
 
+  .mission__data {
+    margin-bottom: clamp(1.75rem, 3vw, 2.5rem);
+    padding: 1.1rem 1.25rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+  }
+
+  .mission__data-title {
+    font-size: var(--step-1);
+    margin: 0 0 0.75rem;
+  }
+
+  .mission__data-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.45rem;
+
+    a {
+      @include focus-ring(2px);
+      color: var(--accent-lit);
+      font-size: 0.9375rem;
+      border-bottom: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+      transition: color $dur-fast ease;
+
+      @include hover {
+        color: var(--accent);
+      }
+    }
+  }
+
   .mission__body {
     max-width: 68ch;
     display: grid;
@@ -144,6 +198,16 @@ const dateFmt = launchDate
 
     :global(p) {
       margin: 0;
+    }
+
+    :global(h2),
+    :global(h3) {
+      color: var(--ink);
+      margin: 1.25rem 0 0;
+    }
+
+    :global(strong) {
+      color: var(--ink);
     }
   }
 </style>

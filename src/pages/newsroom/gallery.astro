@@ -1,17 +1,183 @@
 ---
 import InteriorPage from '../../components/InteriorPage.astro';
 import { withBase } from '../../utils/url';
+
+/**
+ * Starter media catalogue for the concept redesign. Paths point at assets in
+ * /public where present; external links go to official ISRO channels.
+ */
+const catalog = [
+  {
+    id: 'images',
+    title: 'Images',
+    items: [
+      {
+        title: 'Launch vehicle still (PSLV)',
+        kind: 'Image',
+        format: 'WebP',
+        href: withBase('/Images/pslv-1.webp'),
+        source: 'Local demo asset',
+      },
+      {
+        title: 'SSLV reference still',
+        kind: 'Image',
+        format: 'JPEG',
+        href: withBase('/Images/SSLV.jpg'),
+        source: 'Local demo asset',
+      },
+      {
+        title: 'Hero / atmosphere still',
+        kind: 'Image',
+        format: 'WebP',
+        href: withBase('/Images/image1-2.webp'),
+        source: 'Local demo asset',
+      },
+      {
+        title: 'Official multimedia gallery',
+        kind: 'External',
+        format: 'Web',
+        href: 'https://www.isro.gov.in/media_isro.html',
+        source: 'isro.gov.in',
+      },
+    ],
+  },
+  {
+    id: 'video',
+    title: 'Video',
+    items: [
+      {
+        title: 'ISRO Official YouTube',
+        kind: 'Channel',
+        format: 'Video',
+        href: 'https://www.youtube.com/@isroofficial5866',
+        source: 'YouTube',
+      },
+      {
+        title: 'Gaganyaan model (Sketchfab embed source)',
+        kind: '3D / video',
+        format: 'WebGL',
+        href: 'https://sketchfab.com/3d-models/isro-gaganyaan-animated-solar-panel-962a218eb4394890bfa55ab1e6b233e7',
+        source: 'the3dCartel / Sketchfab',
+      },
+    ],
+  },
+  {
+    id: 'docs',
+    title: 'Documents & kits',
+    items: [
+      {
+        title: 'Media kit (this redesign)',
+        kind: 'Page',
+        format: 'HTML',
+        href: withBase('/newsroom/media-kit'),
+        source: 'Concept',
+      },
+      {
+        title: 'Wordmark assets (SVG)',
+        kind: 'Logo',
+        format: 'SVG',
+        href: withBase('/SVG/isro_White.svg'),
+        source: 'Concept mark (see /brand)',
+      },
+      {
+        title: 'ISRO publications / updates',
+        kind: 'External',
+        format: 'Web / PDF',
+        href: 'https://www.isro.gov.in/update.html',
+        source: 'isro.gov.in',
+      },
+    ],
+  },
+];
 ---
 
 <InteriorPage
-  title="Image Gallery"
+  title="Media catalogue"
   eyebrow="Newsroom"
-  description="Imagery from ISRO missions, launches and Earth observation."
-  lede="A concept gallery destination — full archive lives on the official multimedia channels."
+  description="Catalogued images, video channels and document links for this unofficial ISRO redesign."
+  lede="A starter index of local demo assets and official channels. Not an official ISRO media library."
 >
   <p>
-    Browse mission imagery and launch photography via the newsroom, or continue to
+    Prefer feeds?
     {' '}
-    <a href={withBase('/newsroom')}>latest updates</a>.
+    <a href={withBase('/rss.xml')}>Press RSS</a>
+    {' · '}
+    <a href={withBase('/rss/missions.xml')}>Missions RSS</a>
+    {' · '}
+    <a href={withBase('/newsroom')}>Newsroom</a>
   </p>
+
+  {
+    catalog.map((section) => (
+      <section id={section.id}>
+        <h2>{section.title}</h2>
+        <div class="media-table-wrap">
+          <table class="media-table">
+            <thead>
+              <tr>
+                <th scope="col">Title</th>
+                <th scope="col">Kind</th>
+                <th scope="col">Format</th>
+                <th scope="col">Source</th>
+              </tr>
+            </thead>
+            <tbody>
+              {section.items.map((item) => (
+                <tr>
+                  <td>
+                    <a href={item.href} target={item.href.startsWith('http') ? '_blank' : undefined} rel={item.href.startsWith('http') ? 'noreferrer' : undefined}>
+                      {item.title}
+                    </a>
+                  </td>
+                  <td>{item.kind}</td>
+                  <td class="mono">{item.format}</td>
+                  <td>{item.source}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    ))
+  }
 </InteriorPage>
+
+<style lang="scss">
+  @use 'mixins' as *;
+
+  .media-table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    margin-bottom: 0.5rem;
+  }
+
+  .media-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+
+    th,
+    td {
+      text-align: left;
+      padding: 0.7rem 1rem;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+
+    th {
+      @include eyebrow;
+      color: var(--ink);
+      background: var(--surface-2);
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    a {
+      color: var(--accent-lit);
+    }
+  }
+</style>

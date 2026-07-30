@@ -2,6 +2,11 @@ import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'zod';
 
+const dataLink = z.object({
+  label: z.string(),
+  href: z.string().url(),
+});
+
 const missions = defineCollection({
   loader: glob({ pattern: '**/*.md', base: 'src/content/missions' }),
   schema: z.object({
@@ -21,6 +26,8 @@ const missions = defineCollection({
       .array(z.object({ label: z.string(), value: z.coerce.string() }))
       .max(4)
       .default([]),
+    /** Where mission products / telemetry archives can be accessed. */
+    dataLinks: z.array(dataLink).default([]),
     featured: z.boolean().default(false),
     order: z.number().default(99),
   }),

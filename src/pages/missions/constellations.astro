@@ -1,0 +1,161 @@
+---
+import InteriorPage from '../../components/InteriorPage.astro';
+import { constellations } from '../../data/constellations';
+import { withBase } from '../../utils/url';
+
+const statusLabel: Record<string, string> = {
+  active: 'Active',
+  limited: 'Limited',
+  defunct: 'Defunct',
+  failed: 'Failed',
+  planned: 'Planned',
+};
+---
+
+<InteriorPage
+  title="Constellations"
+  eyebrow="Missions"
+  description="NavIC navigation, Earth-observation, and GEO communications satellites: active, limited, and defunct at a glance."
+  lede="A concept snapshot of the fleets Reddit reviewers asked for: navigation with active vs defunct craft, EO series, and GEO communications."
+>
+  <div class="prose-wide">
+  <p class="constellations__note">
+    Unofficial summary for this redesign. Operational users should verify against
+    {' '}
+    <a href="https://www.isro.gov.in" target="_blank" rel="noreferrer">isro.gov.in</a>
+    {' '}
+    and the data portals linked below.
+    {' '}
+    <a href={withBase('/missions')}>Back to mission profiles</a>.
+  </p>
+
+  {
+    constellations.map((group) => (
+      <section class="constellation" id={group.id}>
+        <h2>{group.title}</h2>
+        <p>{group.blurb}</p>
+        <p class="constellation__portals">
+          Data / links:{' '}
+          {group.dataPortals.map((portal, i) => (
+            <>
+              {i > 0 && ' · '}
+              <a
+                href={portal.href.startsWith('http') ? portal.href : withBase(portal.href)}
+                target={portal.href.startsWith('http') ? '_blank' : undefined}
+                rel={portal.href.startsWith('http') ? 'noreferrer' : undefined}
+              >
+                {portal.label}
+              </a>
+            </>
+          ))}
+        </p>
+        <div class="constellation__table-wrap">
+          <table class="constellation__table">
+            <thead>
+              <tr>
+                <th scope="col">Satellite / series</th>
+                <th scope="col">Status</th>
+                <th scope="col">Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              {group.satellites.map((sat) => (
+                <tr>
+                  <td>
+                    <strong>{sat.name}</strong>
+                    {sat.series && <span class="mono constellation__series"> {sat.series}</span>}
+                  </td>
+                  <td>
+                    <span class:list={['constellation__status', `is-${sat.status}`]}>
+                      {statusLabel[sat.status]}
+                    </span>
+                  </td>
+                  <td>{sat.note ?? '—'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    ))
+  }
+  </div>
+</InteriorPage>
+
+<style lang="scss">
+  @use 'mixins' as *;
+
+  .constellations__note {
+    font-size: 0.875rem;
+    color: var(--ink-3);
+  }
+
+  .constellation {
+    display: grid;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+  }
+
+  .constellation__portals {
+    font-size: 0.875rem;
+  }
+
+  .constellation__table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+  }
+
+  .constellation__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+
+    th,
+    td {
+      text-align: left;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+
+    th {
+      @include eyebrow;
+      color: var(--ink);
+      background: var(--surface-2);
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+  }
+
+  .constellation__series {
+    display: block;
+    margin-top: 0.2rem;
+    font-size: 0.6875rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  .constellation__status {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+
+    &.is-active {
+      color: var(--status-active);
+    }
+    &.is-limited,
+    &.is-planned {
+      color: var(--status-upcoming);
+    }
+    &.is-defunct,
+    &.is-failed {
+      color: var(--ink-3);
+    }
+  }
+</style>

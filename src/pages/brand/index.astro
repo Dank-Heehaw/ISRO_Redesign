@@ -6,8 +6,15 @@ import InteriorPage from '../../components/InteriorPage.astro';
   title="Brand & Credits"
   eyebrow="Credits"
   description="Design credits for this unofficial ISRO website redesign concept."
-  lede="A portfolio demonstrator — not affiliated with ISRO or the Department of Space."
+  lede="A portfolio demonstrator. Not affiliated with ISRO or the Department of Space."
 >
+  <aside class="disclaimer" role="note">
+    <p>
+      Unofficial fan / concept work only. Do not treat this site as an official Government of India
+      or ISRO property.
+    </p>
+  </aside>
+
   <h2>Logotype</h2>
   <p>
     The ISRO wordmark used is inspired from
@@ -38,13 +45,34 @@ import InteriorPage from '../../components/InteriorPage.astro';
     on Sketchfab, embedded on the homepage Mission in focus section.
   </p>
 
+  <h2>Type</h2>
+  <p>
+    Space Grotesk (display), IBM Plex Sans (body), JetBrains Mono (labels), Noto Sans Devanagari
+    (Hindi). The UX4G theme toggle switches to a system-font government look.
+  </p>
+
   <h2>Source</h2>
   <p>
     <a href="https://www.isro.gov.in/" target="_blank" rel="noreferrer">isro.gov.in</a>
     {' '}
-    — content source
+    (content source)
   </p>
 
   <h2>Built by</h2>
-  <p>Abdul Waheed Khan Sowdagar — concept redesign for portfolio demonstration.</p>
+  <p>Abdul Waheed Khan Sowdagar: concept redesign for portfolio demonstration.</p>
 </InteriorPage>
+
+<style lang="scss">
+  .disclaimer {
+    padding: 1rem 1.2rem;
+    border: 1px solid var(--line-strong);
+    border-left: 3px solid var(--saffron);
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+
+    p {
+      margin: 0;
+      font-size: 0.9375rem;
+    }
+  }
+</style>

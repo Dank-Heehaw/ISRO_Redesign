@@ -1,15 +1,24 @@
 ---
 import InteriorPage from '../../components/InteriorPage.astro';
+import { withBase } from '../../utils/url';
 ---
 
 <InteriorPage
   title="Media Kit"
   eyebrow="Newsroom"
-  description="Logos, b-roll references and usage notes for media covering ISRO."
-  lede="Assets and guidance for journalists — concept page for this redesign."
+  description="Logos, b-roll references and usage notes for this unofficial ISRO concept redesign."
+  lede="Assets and guidance for journalists covering this portfolio demonstrator, not official ISRO branding."
 >
   <p>
-    Official brand and media resources are published by ISRO. The wordmark in this concept redesign
-    is credited to Swarna Manjari and is not an official ISRO mark.
+    Official brand and media resources are published by ISRO on
+    {' '}
+    <a href="https://www.isro.gov.in" target="_blank" rel="noreferrer">isro.gov.in</a>.
+    The wordmark in this concept redesign is credited to Swarna Manjari and is not an official ISRO mark.
   </p>
+  <ul>
+    <li><a href={withBase('/newsroom/gallery')}>Media catalogue</a> (images, video, docs)</li>
+    <li><a href={withBase('/SVG/isro_White.svg')}>Concept wordmark (white SVG)</a></li>
+    <li><a href={withBase('/SVG/isro_Black.svg')}>Concept wordmark (black SVG)</a></li>
+    <li><a href={withBase('/brand')}>Brand credits</a></li>
+  </ul>
 </InteriorPage>

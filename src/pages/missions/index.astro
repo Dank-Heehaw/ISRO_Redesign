@@ -27,21 +27,29 @@ const categories = [
       <PageHero
         eyebrow="Missions"
         title="In orbit, in transit, in build."
-        lede="Filter by category. Every card opens a full mission profile."
+        lede="Filter by category. Every card opens a full mission profile. Constellation tables cover NavIC, EO and GEO fleets."
       />
+
+      <noscript>
+        <p class="page__noscript">
+          Filters need JavaScript. All missions are listed below, or open
+          {' '}
+          <a href={withBase('/missions/constellations')}>constellations</a>.
+        </p>
+      </noscript>
 
       <div class="filters" role="tablist" aria-label="Mission categories" data-filters>
         {
           categories.map((cat, i) => (
-            <button
-              type="button"
+            <a
               class="filters__btn"
               role="tab"
+              href={cat.id === 'all' ? withBase('/missions') : `${withBase('/missions')}?category=${cat.id}`}
               data-filter={cat.id}
               aria-selected={i === 0 ? 'true' : 'false'}
             >
               {cat.label}
-            </button>
+            </a>
           ))
         }
       </div>
@@ -57,7 +65,11 @@ const categories = [
       </div>
 
       <p class="page__note">
-        Looking for the fleet? <a href={withBase('/launch-vehicles')}>Launch vehicles →</a>
+        Looking for fleets by orbit?
+        {' '}
+        <a href={withBase('/missions/constellations')}>Constellations (NavIC, EO, GEO)</a>
+        {' · '}
+        <a href={withBase('/launch-vehicles')}>Launch vehicles</a>
       </p>
     </div>
   </div>
@@ -73,6 +85,16 @@ const categories = [
 
   .page__inner {
     @include shell;
+  }
+
+  .page__noscript {
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+    color: var(--ink-3);
+
+    a {
+      color: var(--accent-lit);
+    }
   }
 
   .filters {
@@ -101,7 +123,7 @@ const categories = [
     &[aria-selected='true'] {
       color: var(--ink);
       border-color: var(--accent);
-      background: rgb(94 176 255 / 10%);
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
     }
 
     @include hover {
@@ -139,10 +161,10 @@ const categories = [
   const params = new URLSearchParams(window.location.search);
   const initial = params.get('category') ?? 'all';
 
-  const buttons = document.querySelectorAll<HTMLButtonElement>('[data-filter]');
+  const buttons = document.querySelectorAll<HTMLAnchorElement>('[data-filter]');
   const cards = document.querySelectorAll<HTMLElement>('[data-category]');
 
-  const apply = (id: string) => {
+  const apply = (id: string, push = false) => {
     buttons.forEach((btn) => {
       btn.setAttribute('aria-selected', String(btn.dataset.filter === id));
     });
@@ -150,14 +172,19 @@ const categories = [
       const show = id === 'all' || card.dataset.category === id;
       card.hidden = !show;
     });
-    const url = new URL(window.location.href);
-    if (id === 'all') url.searchParams.delete('category');
-    else url.searchParams.set('category', id);
-    history.replaceState(null, '', url);
+    if (push) {
+      const url = new URL(window.location.href);
+      if (id === 'all') url.searchParams.delete('category');
+      else url.searchParams.set('category', id);
+      history.replaceState(null, '', url);
+    }
   };
 
   buttons.forEach((btn) => {
-    btn.addEventListener('click', () => apply(btn.dataset.filter ?? 'all'));
+    btn.addEventListener('click', (event) => {
+      event.preventDefault();
+      apply(btn.dataset.filter ?? 'all', true);
+    });
   });
 
   apply(initial);

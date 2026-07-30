@@ -11,8 +11,10 @@ const year = new Date().getFullYear();
     <div class="site-footer__brand">
       <Wordmark variant="full" height={36} />
       <p class="site-footer__tagline">
-        A concept redesign. Not affiliated with, or endorsed by, the Indian Space Research
-        Organisation or the Department of Space.
+        Unofficial fan concept redesign. Not affiliated with, endorsed by, or connected to the
+        Indian Space Research Organisation or the Department of Space. For the official site, visit
+        {' '}
+        <a href="https://www.isro.gov.in" target="_blank" rel="noreferrer">isro.gov.in</a>.
       </p>
       <ul role="list" class="site-footer__social">
         {
@@ -25,6 +27,10 @@ const year = new Date().getFullYear();
           ))
         }
       </ul>
+      <p class="site-footer__feeds mono">
+        <a href={withBase('/rss.xml')}>RSS: press</a>
+        <a href={withBase('/rss/missions.xml')}>RSS: missions</a>
+      </p>
     </div>
 
     <nav class="site-footer__nav" aria-label="Footer">
@@ -62,8 +68,7 @@ const year = new Date().getFullYear();
       >
         Swarna Manjari
       </a>
-      {' '}
-      — used with credit for this concept redesign.
+      , used with credit for this concept redesign.
     </p>
     <p>
       3D model by
@@ -80,11 +85,13 @@ const year = new Date().getFullYear();
     </p>
     <p>
       <a href={withBase('/brand')}>Full credits</a>
+      {' · '}
+      <a href={withBase('/about')}>About this redesign</a>
     </p>
   </div>
 
   <div class="site-footer__legal">
-    <p class="mono">© {year} — Abdul Waheed Khan Sowdagar</p>
+    <p class="mono">© {year} Abdul Waheed Khan Sowdagar (unofficial)</p>
     <ul role="list">
       {
         footerMeta.map((link) => (
@@ -122,10 +129,15 @@ const year = new Date().getFullYear();
 
   .site-footer__tagline {
     margin-top: 1.25rem;
-    max-width: 34ch;
+    max-width: 38ch;
     font-size: 0.8125rem;
     line-height: 1.65;
     color: var(--ink-3);
+
+    a {
+      color: var(--ink-2);
+      border-bottom: 1px solid var(--accent);
+    }
   }
 
   .site-footer__social {
@@ -150,6 +162,26 @@ const year = new Date().getFullYear();
       @include hover {
         color: var(--accent);
         border-color: var(--accent);
+      }
+    }
+  }
+
+  .site-footer__feeds {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 1.15rem;
+
+    a {
+      @include focus-ring(2px);
+      font-size: 0.6875rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      transition: color $dur-fast ease;
+
+      @include hover {
+        color: var(--accent);
       }
     }
   }

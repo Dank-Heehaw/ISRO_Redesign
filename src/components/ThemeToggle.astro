@@ -1,0 +1,151 @@
+---
+/**
+ * ThemeToggle: switches between the custom redesign and a UX4G-inspired
+ * light government theme. Preference is stored in localStorage.
+ */
+---
+
+<button
+  type="button"
+  class="theme-toggle"
+  data-theme-toggle
+  aria-pressed="false"
+  aria-label="Switch to UX4G government theme"
+  title="Theme: Redesign / UX4G"
+>
+  <span class="theme-toggle__track" aria-hidden="true">
+    <span class="theme-toggle__thumb"></span>
+  </span>
+  <span class="theme-toggle__label mono">
+    <span data-theme-label>Redesign</span>
+  </span>
+</button>
+
+<style lang="scss">
+  @use 'mixins' as *;
+  @use 'tokens' as *;
+
+  .theme-toggle {
+    @include focus-ring;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.35rem 0.55rem 0.35rem 0.4rem;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    background: rgb(255 255 255 / 4%);
+    color: var(--ink-2);
+    cursor: pointer;
+    transition:
+      border-color $dur-fast ease,
+      background-color $dur-fast ease,
+      color $dur-fast ease;
+
+    @include hover {
+      border-color: var(--accent);
+      color: var(--ink);
+    }
+
+    &[aria-pressed='true'] {
+      border-color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+    }
+  }
+
+  .theme-toggle__track {
+    position: relative;
+    width: 1.85rem;
+    height: 1rem;
+    border-radius: 999px;
+    background: var(--surface-3);
+    border: 1px solid var(--line);
+    flex-shrink: 0;
+  }
+
+  .theme-toggle__thumb {
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    width: 0.65rem;
+    height: 0.65rem;
+    border-radius: 50%;
+    background: var(--accent);
+    transition: transform $dur-base $ease-out-quart;
+  }
+
+  .theme-toggle[aria-pressed='true'] .theme-toggle__thumb {
+    transform: translateX(0.75rem);
+  }
+
+  .theme-toggle__label {
+    font-size: 0.625rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  [data-theme='ux4g'] .theme-toggle {
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+
+  [data-theme='ux4g'] .theme-toggle__track {
+    border-radius: 2px;
+  }
+
+  [data-theme='ux4g'] .theme-toggle__thumb {
+    border-radius: 2px;
+  }
+</style>
+
+<script>
+  const STORAGE_KEY = 'isro-theme';
+  const UX4G = 'ux4g';
+  const REDESIGN = 'redesign';
+
+  const root = document.documentElement;
+  const buttons = () => document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]');
+
+  const read = (): string => {
+    try {
+      return localStorage.getItem(STORAGE_KEY) === UX4G ? UX4G : REDESIGN;
+    } catch {
+      return REDESIGN;
+    }
+  };
+
+  const apply = (theme: string) => {
+    const isUx = theme === UX4G;
+    if (isUx) root.setAttribute('data-theme', UX4G);
+    else root.removeAttribute('data-theme');
+
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', isUx ? '#f4f6f9' : '#04060a');
+
+    buttons().forEach((btn) => {
+      btn.setAttribute('aria-pressed', String(isUx));
+      btn.setAttribute(
+        'aria-label',
+        isUx ? 'Switch to custom redesign theme' : 'Switch to UX4G government theme',
+      );
+      const label = btn.querySelector('[data-theme-label]');
+      if (label) label.textContent = isUx ? 'UX4G' : 'Redesign';
+    });
+  };
+
+  apply(read());
+
+  document.addEventListener('click', (event) => {
+    const target = event.target as HTMLElement | null;
+    const btn = target?.closest?.('[data-theme-toggle]') as HTMLButtonElement | null;
+    if (!btn) return;
+    const next = read() === UX4G ? REDESIGN : UX4G;
+    try {
+      localStorage.setItem(STORAGE_KEY, next);
+    } catch {
+      /* ignore quota / private mode */
+    }
+    apply(next);
+  });
+</script>

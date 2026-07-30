@@ -1,5 +1,6 @@
 ---
 import Wordmark from './brand/Wordmark.astro';
+import ThemeToggle from './ThemeToggle.astro';
 import { primaryNav } from '../data/navigation';
 import { withBase, isActive } from '../utils/url';
 
@@ -8,7 +9,7 @@ const pathname = Astro.url.pathname;
 
 <header class="site-header" data-header>
   <div class="site-header__bar">
-    <a class="site-header__brand" href={withBase('/')} aria-label="ISRO — home">
+    <a class="site-header__brand" href={withBase('/')} aria-label="ISRO concept redesign, home">
       <Wordmark variant="full" height={22} />
     </a>
 
@@ -52,7 +53,8 @@ const pathname = Astro.url.pathname;
     </nav>
 
     <div class="site-header__actions">
-      <a class="site-header__live" href={withBase('/newsroom')} aria-label="Watch Live — no stream active">
+      <ThemeToggle />
+      <a class="site-header__live" href={withBase('/newsroom')} aria-label="Watch Live (no stream active)">
         <span class="site-header__pulse" aria-hidden="true"></span>
         Watch Live
       </a>
@@ -85,6 +87,9 @@ const pathname = Astro.url.pathname;
           </section>
         ))
       }
+      <div class="site-header__drawer-theme">
+        <ThemeToggle />
+      </div>
       <a class="site-header__drawer-live" href={withBase('/newsroom')}>
         <span class="site-header__pulse" aria-hidden="true"></span>
         Watch Live
@@ -324,6 +329,16 @@ const pathname = Astro.url.pathname;
     flex: none;
   }
 
+  .site-header__actions :global(.theme-toggle__label) {
+    @include upto('md') {
+      display: none;
+    }
+  }
+
+  .site-header__drawer-theme {
+    grid-column: 1 / -1;
+  }
+
   .site-header__live {
     @include focus-ring;
 
@@ -429,7 +444,7 @@ const pathname = Astro.url.pathname;
     max-height: calc(100svh - var(--header-h));
     overflow-y: auto;
     overscroll-behavior: contain;
-    background: rgb(4 6 10 / 98%);
+    background: color-mix(in srgb, var(--void) 96%, transparent);
     backdrop-filter: blur(20px);
     border-top: 1px solid var(--line);
 

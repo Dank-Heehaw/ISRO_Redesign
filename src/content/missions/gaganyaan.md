@@ -6,11 +6,11 @@ status: in-development
 vehicle: HLVM3
 destination: Low Earth Orbit
 summary: >-
-  India's first crewed spaceflight programme — a three-person capsule qualified
+  India's first crewed spaceflight programme: a three-person capsule qualified
   to carry Gaganyatris to low Earth orbit and return them safely.
 accent: '#5eb0ff'
 featured: true
-order: 2
+order: 3
 stats:
   - label: Crew
     value: 3
@@ -20,6 +20,9 @@ stats:
     value: Up to 3 days
   - label: Vehicle
     value: Human-rated LVM3
+dataLinks:
+  - label: Gaganyaan on isro.gov.in
+    href: https://www.isro.gov.in/Gaganyaan.html
 ---
 
 Gaganyaan is the programme that changes what ISRO is. Every prior mission could

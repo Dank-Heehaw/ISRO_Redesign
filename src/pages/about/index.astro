@@ -4,18 +4,32 @@ import { withBase } from '../../utils/url';
 ---
 
 <InteriorPage
-  title="About ISRO"
+  title="About this redesign"
   eyebrow="Organisation"
-  description="The Indian Space Research Organisation — centres, autonomous bodies, and the commercial layer."
-  lede="Established in 1969. Builds launch vehicles, spacecraft, and the Earth-observation network a billion people rely on."
+  description="Unofficial concept redesign of the ISRO website: centres, autonomous bodies, and how this demonstrator relates to the official agency."
+  lede="A portfolio concept inspired by isro.gov.in. Not the official Indian Space Research Organisation website."
 >
+  <aside class="disclaimer" role="note">
+    <h2>Unofficial disclaimer</h2>
+    <p>
+      This site is an <strong>unofficial fan / portfolio redesign</strong>. It is not affiliated with,
+      endorsed by, operated by, or connected to the Indian Space Research Organisation (ISRO) or the
+      Department of Space, Government of India. Mission facts are drawn from public sources and may
+      lag official updates. For authoritative information, use
+      {' '}
+      <a href="https://www.isro.gov.in" target="_blank" rel="noreferrer">www.isro.gov.in</a>.
+    </p>
+  </aside>
+
   <p>
-    ISRO is the space agency of India under the Department of Space. Its work spans launch vehicles,
-    satellites, planetary missions, human spaceflight, and open data services.
+    The live agency builds launch vehicles, spacecraft, planetary missions, human spaceflight, and
+    open data services under the Department of Space. This demonstrator reorganises that public
+    story for clarity; it does not speak for ISRO.
   </p>
   <ul>
     <li><a href={withBase('/about/centres')}>Centres &amp; Units</a></li>
     <li><a href={withBase('/about/autonomous-bodies')}>Autonomous bodies</a></li>
+    <li><a href={withBase('/missions/constellations')}>Constellations (NavIC, EO, GEO)</a></li>
     <li><a href={withBase('/brand')}>Brand &amp; credits</a></li>
     <li>
       <a href="https://www.inspace.gov.in" target="_blank" rel="noreferrer">IN-SPACe</a>
@@ -26,3 +40,22 @@ import { withBase } from '../../utils/url';
     </li>
   </ul>
 </InteriorPage>
+
+<style lang="scss">
+  .disclaimer {
+    padding: 1.25rem 1.4rem;
+    border: 1px solid var(--line-strong);
+    border-left: 3px solid var(--saffron);
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+
+    h2 {
+      margin-top: 0 !important;
+      font-size: var(--step-1);
+    }
+
+    p {
+      margin: 0.65rem 0 0;
+    }
+  }
+</style>

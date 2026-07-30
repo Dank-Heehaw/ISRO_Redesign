@@ -28,15 +28,24 @@ const dateFmt = new Intl.DateTimeFormat('en-IN', {
       <PageHero
         eyebrow="Newsroom"
         title="What happened this month."
-        lede="Press, launches, science and outreach — split so you can ignore what you don't need."
+        lede="Press, launches, science and outreach, split so you can ignore what you don't need."
       />
+
+      <noscript>
+        <p class="page__noscript">All updates are listed below. Filters enhance the page when JavaScript is available.</p>
+      </noscript>
 
       <div class="filters" data-filters>
         {
           types.map((t, i) => (
-            <button type="button" class="filters__btn" data-filter={t.id} aria-pressed={i === 0 ? 'true' : 'false'}>
+            <a
+              class="filters__btn"
+              href={t.id === 'all' ? withBase('/newsroom') : `${withBase('/newsroom')}?type=${t.id}`}
+              data-filter={t.id}
+              aria-pressed={i === 0 ? 'true' : 'false'}
+            >
               {t.label}
-            </button>
+            </a>
           ))
         }
       </div>
@@ -59,8 +68,9 @@ const dateFmt = new Intl.DateTimeFormat('en-IN', {
       </ul>
 
       <p class="page__links">
-        <a href={withBase('/newsroom/gallery')}>Image gallery</a>
+        <a href={withBase('/newsroom/gallery')}>Media catalogue</a>
         <a href={withBase('/newsroom/media-kit')}>Media kit</a>
+        <a href={withBase('/rss.xml')}>RSS</a>
       </p>
     </div>
   </div>
@@ -85,6 +95,12 @@ const dateFmt = new Intl.DateTimeFormat('en-IN', {
     margin-bottom: 1.5rem;
   }
 
+  .page__noscript {
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+    color: var(--ink-3);
+  }
+
   .filters__btn {
     @include focus-ring;
     padding: 0.45rem 0.9rem;
@@ -99,7 +115,7 @@ const dateFmt = new Intl.DateTimeFormat('en-IN', {
     &[aria-pressed='true'] {
       color: var(--ink);
       border-color: var(--accent);
-      background: rgb(94 176 255 / 10%);
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
     }
   }
 
@@ -175,16 +191,27 @@ const dateFmt = new Intl.DateTimeFormat('en-IN', {
 <script>
   const params = new URLSearchParams(window.location.search);
   const initial = params.get('type') ?? 'all';
-  const buttons = document.querySelectorAll<HTMLButtonElement>('[data-filter]');
+  const buttons = document.querySelectorAll<HTMLAnchorElement>('[data-filter]');
   const items = document.querySelectorAll<HTMLElement>('[data-type]');
 
-  const apply = (id: string) => {
+  const apply = (id: string, push = false) => {
     buttons.forEach((btn) => btn.setAttribute('aria-pressed', String(btn.dataset.filter === id)));
     items.forEach((el) => {
       el.hidden = !(id === 'all' || el.dataset.type === id);
     });
+    if (push) {
+      const url = new URL(window.location.href);
+      if (id === 'all') url.searchParams.delete('type');
+      else url.searchParams.set('type', id);
+      history.replaceState(null, '', url);
+    }
   };
 
-  buttons.forEach((btn) => btn.addEventListener('click', () => apply(btn.dataset.filter ?? 'all')));
+  buttons.forEach((btn) =>
+    btn.addEventListener('click', (event) => {
+      event.preventDefault();
+      apply(btn.dataset.filter ?? 'all', true);
+    }),
+  );
   apply(initial);
 </script>

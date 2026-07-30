@@ -11,7 +11,7 @@ summary: >-
   and the first to touch down near the Moon's south pole.
 accent: '#c9a227'
 featured: true
-order: 1
+order: 2
 stats:
   - label: Landing
     value: 23 Aug 2023
@@ -21,6 +21,11 @@ stats:
     value: 101 m
   - label: Surface ops
     value: 14 Earth days
+dataLinks:
+  - label: ISSDC science archive
+    href: https://issdc.gov.in
+  - label: Chandrayaan-3 on isro.gov.in
+    href: https://www.isro.gov.in/Chandrayaan3.html
 ---
 
 Chandrayaan-3 set the Vikram lander down at 69.37°S on 23 August 2023, in terrain
@@ -30,7 +35,7 @@ may hold water ice preserved for billions of years.
 
 The Pragyan rover covered 101 metres over one lunar day. Its Alpha Particle X-ray
 Spectrometer measured a composition at the landing site that ties the region to
-ALHA 81005, the first lunar meteorite recovered on Earth — an unexpectedly direct
+ALHA 81005, the first lunar meteorite recovered on Earth: an unexpectedly direct
 link between a rock in a laboratory and the ground it came from.
 
 The lander's RAMBHA-LP instrument returned the first in-situ measurements of the
