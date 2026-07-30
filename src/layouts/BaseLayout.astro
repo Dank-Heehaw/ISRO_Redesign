@@ -8,6 +8,7 @@ import '../styles/global.scss';
 import Analytics from '@vercel/analytics/astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import ThemeA11yDock from '../components/ThemeA11yDock.astro';
 import { withBase } from '../utils/url';
 
 interface Props {
@@ -84,6 +85,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
       <slot />
     </main>
     <Footer />
+    <ThemeA11yDock />
     <Analytics />
 
     <script>

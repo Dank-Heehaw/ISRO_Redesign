@@ -97,26 +97,15 @@
     text-align: left;
   }
 
-  @include upto('md') {
-    .theme-toggle {
-      min-width: 2.85rem;
-      padding-inline: 0.5rem;
-    }
-
-    .theme-toggle__label {
-      min-width: 0;
-    }
-  }
-
   // Dark redesign canvas: keep the same geometry, just darker fill.
   :root:not([data-theme='ux4g']) .theme-toggle {
-    background: rgb(255 255 255 / 6%);
+    background: rgb(255 255 255 / 8%);
     border-color: var(--line-strong);
     color: var(--ink-2);
 
     &[aria-pressed='true'] {
-      color: var(--accent-lit);
-      background: color-mix(in srgb, #4a2bc2 22%, transparent);
+      color: #c0b3ff;
+      background: color-mix(in srgb, #4a2bc2 28%, transparent);
       box-shadow: 0 0 0 3px rgb(74 43 194 / 28%);
     }
   }
