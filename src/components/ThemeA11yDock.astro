@@ -8,6 +8,7 @@ import ThemeToggle from './ThemeToggle.astro';
 
 <aside class="a11y-dock" data-a11y-dock aria-label="Accessibility options">
   <div class="a11y-dock__hit" data-a11y-hit>
+    <span class="a11y-dock__peek mono" aria-hidden="true">A11y</span>
     <div class="a11y-dock__inner" data-a11y-inner>
       <p class="a11y-dock__eyebrow mono">A11y</p>
       <div class="a11y-dock__panel">
@@ -40,16 +41,20 @@ import ThemeToggle from './ThemeToggle.astro';
   }
 
   .a11y-dock__hit {
+    position: relative;
+    // `clip-path` is required: Chromium often fails to clip descendants when
+    // `overflow: hidden` and `backdrop-filter` share the same element.
     overflow: hidden;
+    clip-path: inset(0 round 0.25rem);
     box-sizing: border-box;
     border: 1px solid var(--line-strong);
     border-radius: 0.25rem;
     background: color-mix(in srgb, var(--surface) 88%, transparent);
     backdrop-filter: blur(10px);
     box-shadow: 0 2px 10px rgb(0 0 0 / 12%);
-    // Collapsed fallback before JS measures (eyebrow chip).
-    width: 4.25rem;
-    height: 2.15rem;
+    // Collapsed fallback before JS measures (~3rem × 2.125rem chip).
+    width: 3rem;
+    height: 2.125rem;
   }
 
   .a11y-dock__hit.is-open {
@@ -57,25 +62,73 @@ import ThemeToggle from './ThemeToggle.astro';
     box-shadow: 0 8px 24px rgb(0 0 0 / 18%);
   }
 
+  // Short label chip while collapsed; opaque so panel never shows through.
+  .a11y-dock__peek {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    padding: 0 0.35rem;
+    pointer-events: none;
+    opacity: 1;
+    font-size: 0.5625rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    line-height: 1;
+    color: var(--ink-3);
+    background: color-mix(in srgb, var(--surface) 92%, transparent);
+    backdrop-filter: blur(10px);
+    transition: opacity 0.2s ease;
+  }
+
+  .a11y-dock__peek::before {
+    content: '';
+    flex: none;
+    width: 0.2rem;
+    height: 0.7rem;
+    border-radius: 1px;
+    background: var(--accent);
+  }
+
+  .a11y-dock__hit.is-open .a11y-dock__peek {
+    opacity: 0;
+  }
+
   .a11y-dock__inner {
     box-sizing: border-box;
-    width: min(17rem, calc(100vw - 1rem));
-    padding: 0.6rem 1rem;
+    width: min(15rem, calc(100vw - 1rem));
+    padding: 0.4rem 0.55rem;
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    gap: 0.55rem;
+    gap: 0.45rem;
+  }
+
+  // Fully hide panel chrome only when sealed (fully collapsed, not mid-tween).
+  .a11y-dock__hit.is-sealed .a11y-dock__panel {
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .a11y-dock__hit.is-sealed .a11y-dock__eyebrow {
+    visibility: hidden;
   }
 
   .a11y-dock__eyebrow {
     margin: 0;
-    font-size: 0.625rem;
-    letter-spacing: 0.12em;
+    font-size: 0.5625rem;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    line-height: 1.2;
+    line-height: 1.15;
     color: var(--ink-3);
     flex: none;
     white-space: nowrap;
+    overflow: hidden;
+    // Covered by peek while collapsed; readable in the open panel.
+    max-width: 100%;
   }
 
   .a11y-dock__panel {
@@ -112,11 +165,29 @@ import ThemeToggle from './ThemeToggle.astro';
   .a11y-dock :global(.theme-toggle) {
     min-width: 0;
     width: 100%;
+    min-height: 2rem;
+    padding: 0.3rem 0.45rem;
+    gap: 0.4rem;
   }
 
   .a11y-dock :global(.theme-toggle__label) {
     display: inline;
-    min-width: 4.25rem;
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .a11y-dock :global(.theme-toggle__track) {
+    width: 1.55rem;
+    height: 0.85rem;
+  }
+
+  .a11y-dock :global(.theme-toggle__thumb) {
+    width: 0.55rem;
+    height: 0.55rem;
+  }
+
+  .a11y-dock :global(.theme-toggle[aria-pressed='true'] .theme-toggle__thumb) {
+    transform: translateX(0.6rem);
   }
 </style>
 
@@ -128,19 +199,16 @@ import ThemeToggle from './ThemeToggle.astro';
   function initDock(root: HTMLElement) {
     const hit = root.querySelector<HTMLElement>('[data-a11y-hit]');
     const inner = root.querySelector<HTMLElement>('[data-a11y-inner]');
-    const eyebrow = root.querySelector<HTMLElement>('.a11y-dock__eyebrow');
-    if (!hit || !inner || !eyebrow) return;
+    if (!hit || !inner) return;
 
     let open = false;
     let tween: gsap.core.Tween | null = null;
     let leaveTimer = 0;
-    let collapsed = { w: 68, h: 34 };
-    let expanded = { w: 272, h: 200 };
+    let collapsed = { w: 48, h: 34 };
+    let expanded = { w: 240, h: 180 };
 
     const measure = () => {
-      const innerStyles = getComputedStyle(inner);
-      const padX = parseFloat(innerStyles.paddingLeft) + parseFloat(innerStyles.paddingRight);
-      const padY = parseFloat(innerStyles.paddingTop) + parseFloat(innerStyles.paddingBottom);
+      const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
       const borderX =
         parseFloat(getComputedStyle(hit).borderLeftWidth) +
         parseFloat(getComputedStyle(hit).borderRightWidth);
@@ -148,9 +216,10 @@ import ThemeToggle from './ThemeToggle.astro';
         parseFloat(getComputedStyle(hit).borderTopWidth) +
         parseFloat(getComputedStyle(hit).borderBottomWidth);
 
+      // Match CSS `width: 3rem; height: 2.125rem` (border-box).
       collapsed = {
-        w: Math.ceil(eyebrow.offsetWidth + padX + borderX),
-        h: Math.ceil(eyebrow.offsetHeight + padY + borderY),
+        w: Math.round(rem * 3),
+        h: Math.round(rem * 2.125),
       };
       expanded = {
         w: Math.ceil(inner.offsetWidth + borderX),
@@ -158,12 +227,31 @@ import ThemeToggle from './ThemeToggle.astro';
       };
     };
 
+    const applyCollapsedA11y = () => {
+      hit.tabIndex = 0;
+      inner.setAttribute('inert', '');
+      inner.setAttribute('aria-hidden', 'true');
+    };
+
+    const applyExpandedA11y = () => {
+      hit.removeAttribute('tabindex');
+      inner.removeAttribute('inert');
+      inner.removeAttribute('aria-hidden');
+    };
+
     const setClosed = (animate: boolean) => {
       open = false;
       hit.classList.remove('is-open');
+      applyCollapsedA11y();
       tween?.kill();
+      const seal = () => hit.classList.add('is-sealed');
       if (!animate || prefersReduced()) {
-        gsap.set(hit, { width: collapsed.w, height: collapsed.h });
+        gsap.set(hit, {
+          width: collapsed.w,
+          height: collapsed.h,
+          overflow: 'hidden',
+        });
+        seal();
         return;
       }
       tween = gsap.to(hit, {
@@ -172,15 +260,26 @@ import ThemeToggle from './ThemeToggle.astro';
         duration: 0.45,
         ease: 'power3.inOut',
         overwrite: true,
+        onComplete: seal,
       });
     };
 
     const setOpen = (animate: boolean) => {
       open = true;
+      hit.classList.remove('is-sealed');
       hit.classList.add('is-open');
+      const focusChip = document.activeElement === hit;
+      applyExpandedA11y();
+      if (focusChip) {
+        inner.querySelector<HTMLElement>('button, a, [href], [tabindex]:not([tabindex="-1"])')?.focus();
+      }
       tween?.kill();
       if (!animate || prefersReduced()) {
-        gsap.set(hit, { width: expanded.w, height: expanded.h });
+        gsap.set(hit, {
+          width: expanded.w,
+          height: expanded.h,
+          overflow: 'hidden',
+        });
         return;
       }
       tween = gsap.to(hit, {
@@ -201,7 +300,13 @@ import ThemeToggle from './ThemeToggle.astro';
     };
 
     measure();
-    gsap.set(hit, { width: collapsed.w, height: collapsed.h });
+    hit.classList.add('is-sealed');
+    applyCollapsedA11y();
+    gsap.set(hit, {
+      width: collapsed.w,
+      height: collapsed.h,
+      overflow: 'hidden',
+    });
 
     hit.addEventListener('pointerenter', () => {
       window.clearTimeout(leaveTimer);
