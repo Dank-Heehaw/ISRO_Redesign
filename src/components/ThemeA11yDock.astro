@@ -1,16 +1,29 @@
 ---
 /**
  * Bottom-left accessibility control. Content stays at full size; GSAP animates
- * a clipping frame (width + height together) on hover / focus.
+ * a clipping frame (width + height together). Fine pointer + hover: expand on
+ * hover/focus. Coarse/touch: tap-to-toggle (no hover reliance).
  */
 import ThemeToggle from './ThemeToggle.astro';
 ---
 
 <aside class="a11y-dock" data-a11y-dock aria-label="Accessibility options">
-  <div class="a11y-dock__hit" data-a11y-hit>
+  <div
+    class="a11y-dock__hit"
+    data-a11y-hit
+    role="button"
+    tabindex="0"
+    aria-expanded="false"
+    aria-controls="a11y-dock-panel"
+  >
     <span class="a11y-dock__peek mono" aria-hidden="true">A11y</span>
-    <div class="a11y-dock__inner" data-a11y-inner>
-      <p class="a11y-dock__eyebrow mono">A11y</p>
+    <div class="a11y-dock__inner" data-a11y-inner id="a11y-dock-panel">
+      <div class="a11y-dock__chrome">
+        <p class="a11y-dock__eyebrow mono">A11y</p>
+        <button type="button" class="a11y-dock__close mono" data-a11y-close hidden>
+          Close
+        </button>
+      </div>
       <div class="a11y-dock__panel">
         <p class="a11y-dock__title">Theme</p>
         <p class="a11y-dock__hint">Switch between redesign and UX4G government look.</p>
@@ -55,11 +68,23 @@ import ThemeToggle from './ThemeToggle.astro';
     // Collapsed fallback before JS measures (~3rem × 2.125rem chip).
     width: 3rem;
     height: 2.125rem;
+    cursor: pointer;
+  }
+
+  // ~44px collapsed hit on touch / coarse pointer without enlarging desktop chip.
+  @media (hover: none), (pointer: coarse) {
+    .a11y-dock__hit {
+      width: 2.75rem;
+      height: 2.75rem;
+      min-width: 2.75rem;
+      min-height: 2.75rem;
+    }
   }
 
   .a11y-dock__hit.is-open {
     border-color: var(--accent);
     box-shadow: 0 8px 24px rgb(0 0 0 / 18%);
+    cursor: default;
   }
 
   // Short label chip while collapsed; opaque so panel never shows through.
@@ -107,8 +132,48 @@ import ThemeToggle from './ThemeToggle.astro';
     gap: 0.45rem;
   }
 
+  .a11y-dock__chrome {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    min-height: 1.15rem;
+  }
+
+  .a11y-dock__close {
+    @include focus-ring(2px);
+
+    flex: none;
+    margin: 0;
+    padding: 0.2rem 0.35rem;
+    border: 0;
+    border-radius: 0.15rem;
+    background: transparent;
+    color: var(--ink-3);
+    font: inherit;
+    font-size: 0.5625rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    line-height: 1.2;
+  }
+
+  @media (hover: none), (pointer: coarse) {
+    .a11y-dock__close {
+      min-height: 2.75rem;
+      min-width: 2.75rem;
+      padding: 0.45rem 0.5rem;
+    }
+  }
+
+  .a11y-dock__close:hover,
+  .a11y-dock__close:focus-visible {
+    color: var(--ink);
+  }
+
   // Fully hide panel chrome only when sealed (fully collapsed, not mid-tween).
-  .a11y-dock__hit.is-sealed .a11y-dock__panel {
+  .a11y-dock__hit.is-sealed .a11y-dock__panel,
+  .a11y-dock__hit.is-sealed .a11y-dock__close {
     visibility: hidden;
     pointer-events: none;
   }
@@ -170,6 +235,19 @@ import ThemeToggle from './ThemeToggle.astro';
     gap: 0.4rem;
   }
 
+  @media (hover: none), (pointer: coarse) {
+    .a11y-dock :global(.theme-toggle) {
+      min-height: 2.75rem;
+      padding: 0.45rem 0.55rem;
+    }
+
+    .a11y-dock__link {
+      display: inline-flex;
+      align-items: center;
+      min-height: 2.75rem;
+    }
+  }
+
   .a11y-dock :global(.theme-toggle__label) {
     display: inline;
     min-width: 0;
@@ -195,17 +273,28 @@ import ThemeToggle from './ThemeToggle.astro';
   import gsap from 'gsap';
 
   const prefersReduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const finePointerMq = () => window.matchMedia('(hover: hover) and (pointer: fine)');
+  const isFinePointer = () => finePointerMq().matches;
 
   function initDock(root: HTMLElement) {
     const hit = root.querySelector<HTMLElement>('[data-a11y-hit]');
     const inner = root.querySelector<HTMLElement>('[data-a11y-inner]');
+    const closeBtn = root.querySelector<HTMLButtonElement>('[data-a11y-close]');
     if (!hit || !inner) return;
 
     let open = false;
     let tween: gsap.core.Tween | null = null;
     let leaveTimer = 0;
+    let ignoreOutside = false;
+    let ignoreOutsideTimer = 0;
     let collapsed = { w: 48, h: 34 };
     let expanded = { w: 240, h: 180 };
+
+    const syncCloseButton = () => {
+      if (!closeBtn) return;
+      // Explicit close is for touch/coarse; hover mode uses leave/focusout.
+      closeBtn.hidden = isFinePointer();
+    };
 
     const measure = () => {
       const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
@@ -216,25 +305,44 @@ import ThemeToggle from './ThemeToggle.astro';
         parseFloat(getComputedStyle(hit).borderTopWidth) +
         parseFloat(getComputedStyle(hit).borderBottomWidth);
 
-      // Match CSS `width: 3rem; height: 2.125rem` (border-box).
+      // Match CSS collapsed chip (desktop 3×2.125rem; touch min 2.75rem).
+      const touchMin = Math.round(rem * 2.75);
       collapsed = {
         w: Math.round(rem * 3),
         h: Math.round(rem * 2.125),
       };
+      if (!isFinePointer()) {
+        collapsed.w = Math.max(collapsed.w, touchMin);
+        collapsed.h = Math.max(collapsed.h, touchMin);
+      }
       expanded = {
         w: Math.ceil(inner.offsetWidth + borderX),
         h: Math.ceil(inner.offsetHeight + borderY),
       };
     };
 
+    const armIgnoreOutside = () => {
+      ignoreOutside = true;
+      window.clearTimeout(ignoreOutsideTimer);
+      // Ignore the opening gesture's bubble / synthetic follow-up outside event.
+      ignoreOutsideTimer = window.setTimeout(() => {
+        ignoreOutside = false;
+      }, 350);
+    };
+
     const applyCollapsedA11y = () => {
       hit.tabIndex = 0;
+      hit.setAttribute('role', 'button');
+      hit.setAttribute('aria-expanded', 'false');
       inner.setAttribute('inert', '');
       inner.setAttribute('aria-hidden', 'true');
     };
 
     const applyExpandedA11y = () => {
+      // Avoid role=button wrapping interactive controls while open.
       hit.removeAttribute('tabindex');
+      hit.removeAttribute('role');
+      hit.setAttribute('aria-expanded', 'true');
       inner.removeAttribute('inert');
       inner.removeAttribute('aria-hidden');
     };
@@ -292,6 +400,7 @@ import ThemeToggle from './ThemeToggle.astro';
     };
 
     const scheduleClose = () => {
+      if (!isFinePointer()) return;
       window.clearTimeout(leaveTimer);
       leaveTimer = window.setTimeout(() => {
         if (hit.contains(document.activeElement)) return;
@@ -299,7 +408,14 @@ import ThemeToggle from './ThemeToggle.astro';
       }, 160);
     };
 
+    const openFromTouch = () => {
+      if (open) return;
+      armIgnoreOutside();
+      setOpen(true);
+    };
+
     measure();
+    syncCloseButton();
     hit.classList.add('is-sealed');
     applyCollapsedA11y();
     gsap.set(hit, {
@@ -308,16 +424,91 @@ import ThemeToggle from './ThemeToggle.astro';
       overflow: 'hidden',
     });
 
+    // Fine pointer: hover / focus expand (unchanged behavior).
     hit.addEventListener('pointerenter', () => {
+      if (!isFinePointer()) return;
       window.clearTimeout(leaveTimer);
       if (!open) setOpen(true);
     });
     hit.addEventListener('pointerleave', scheduleClose);
     hit.addEventListener('focusin', () => {
+      if (!isFinePointer()) return;
       window.clearTimeout(leaveTimer);
       if (!open) setOpen(true);
     });
     hit.addEventListener('focusout', scheduleClose);
+
+    // Touch / coarse: tap chip to toggle; interactive children stay usable.
+    hit.addEventListener('click', (event) => {
+      if (isFinePointer()) return;
+
+      const target = event.target as Element | null;
+      if (!target) return;
+
+      if (target.closest('[data-a11y-close]')) {
+        event.preventDefault();
+        event.stopPropagation();
+        setClosed(true);
+        return;
+      }
+
+      // Theme toggle, links, and other controls must not collapse the dock.
+      if (open && target.closest('button, a, input, select, textarea, [data-theme-toggle]')) {
+        return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      if (open) setClosed(true);
+      else openFromTouch();
+    });
+
+    hit.addEventListener('keydown', (event) => {
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+      if (event.target !== hit) return;
+      event.preventDefault();
+      if (open) setClosed(true);
+      else if (isFinePointer()) setOpen(true);
+      else openFromTouch();
+    });
+
+    closeBtn?.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      setClosed(true);
+    });
+
+    // Outside tap closes on touch; ignore the same gesture that opened.
+    document.addEventListener(
+      'pointerdown',
+      (event) => {
+        if (!open || isFinePointer() || ignoreOutside) return;
+        const target = event.target as Node | null;
+        if (target && hit.contains(target)) return;
+        setClosed(true);
+      },
+      true,
+    );
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape' || !open) return;
+      setClosed(true);
+      hit.focus();
+    });
+
+    const onPointerModeChange = () => {
+      syncCloseButton();
+      measure();
+      window.clearTimeout(leaveTimer);
+      gsap.set(hit, {
+        width: open ? expanded.w : collapsed.w,
+        height: open ? expanded.h : collapsed.h,
+      });
+    };
+
+    const mq = finePointerMq();
+    mq.addEventListener('change', onPointerModeChange);
 
     let resizeTimer = 0;
     window.addEventListener('resize', () => {
