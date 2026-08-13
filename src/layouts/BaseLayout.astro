@@ -16,11 +16,63 @@ interface Props {
   description: string;
   /** Lets full-bleed heroes sit beneath the transparent fixed header. */
   bleedTop?: boolean;
+  /** Absolute or site-root path for social preview; defaults to /og-default.png */
+  ogImage?: string;
+  ogType?: 'website' | 'article';
+  /** ISO date for Article schema / og:article:published_time */
+  publishedTime?: string;
+  /** Extra JSON-LD graph nodes (merged after WebSite + Organization) */
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  /** Override robots; 404 should use noindex */
+  robots?: string;
 }
 
-const { title, description, bleedTop = false } = Astro.props;
+const {
+  title,
+  description,
+  bleedTop = false,
+  ogImage,
+  ogType = 'website',
+  publishedTime,
+  jsonLd,
+  robots = 'index,follow,max-image-preview:large',
+} = Astro.props;
+
+const siteOrigin = Astro.site?.origin ?? 'https://isro-redesign.vercel.app';
 const fullTitle = title === 'ISRO' ? `${title} (concept redesign)` : `${title} · ISRO redesign`;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const ogImageAbs = ogImage
+  ? ogImage.startsWith('http')
+    ? ogImage
+    : new URL(withBase(ogImage), siteOrigin).href
+  : new URL(withBase('/og-default.png'), siteOrigin).href;
+
+const organizationLd = {
+  '@type': 'Organization',
+  '@id': `${siteOrigin}/#organization`,
+  name: 'ISRO Redesign (unofficial concept)',
+  url: siteOrigin,
+  description:
+    'Unofficial fan concept redesign of the ISRO website for portfolio demonstration. Not affiliated with, endorsed by, or operated by the Indian Space Research Organisation. Not the official ISRO website.',
+  logo: new URL(withBase('/favicon.svg'), siteOrigin).href,
+};
+
+const websiteLd = {
+  '@type': 'WebSite',
+  '@id': `${siteOrigin}/#website`,
+  name: 'ISRO Redesign',
+  url: siteOrigin,
+  description:
+    'A modern concept redesign of India’s space programme site — missions, launch vehicles, and newsroom.',
+  publisher: { '@id': `${siteOrigin}/#organization` },
+  inLanguage: 'en',
+};
+
+const extraLd = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@graph': [organizationLd, websiteLd, ...extraLd],
+};
 ---
 
 <!doctype html>
@@ -30,10 +82,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
-    <meta
-      name="robots"
-      content="index,follow,max-image-preview:large"
-    />
+    <meta name="robots" content={robots} />
     <meta
       name="author"
       content="Unofficial fan concept redesign — not affiliated with ISRO"
@@ -58,11 +107,23 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
     />
     <meta name="theme-color" content="#04060a" />
 
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content="ISRO Redesign (concept)" />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageAbs} />
+    <meta property="og:image:alt" content="ISRO concept redesign — portfolio demonstration" />
+    {publishedTime && (
+      <meta property="article:published_time" content={publishedTime} />
+    )}
+
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageAbs} />
+
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
 
     <!-- Theme + no-js before first paint: avoid flash of wrong theme / hidden reveals. -->
     <script is:inline>

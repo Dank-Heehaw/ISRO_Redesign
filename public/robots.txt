@@ -1,0 +1,5 @@
+# https://isro-redesign.vercel.app — concept redesign (unofficial)
+User-agent: *
+Allow: /
+
+Sitemap: https://isro-redesign.vercel.app/sitemap-index.xml

@@ -20,9 +20,34 @@ const dateFmt = new Intl.DateTimeFormat('en-IN', {
   year: 'numeric',
   timeZone: 'UTC',
 }).format(item.data.date);
+const publishedTime = item.data.date.toISOString();
+const articleLd = {
+  '@type': 'NewsArticle',
+  headline: item.data.title,
+  description: item.data.summary,
+  datePublished: publishedTime,
+  author: {
+    '@type': 'Organization',
+    name: 'ISRO Redesign (unofficial concept)',
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'ISRO Redesign (unofficial concept)',
+  },
+  mainEntityOfPage: {
+    '@type': 'WebPage',
+    '@id': new URL(Astro.url.pathname, Astro.site).href,
+  },
+};
 ---
 
-<BaseLayout title={item.data.title} description={item.data.summary}>
+<BaseLayout
+  title={item.data.title}
+  description={item.data.summary}
+  ogType="article"
+  publishedTime={publishedTime}
+  jsonLd={articleLd}
+>
   <article class="article">
     <div class="article__inner">
       <p class="article__back"><a href={withBase('/newsroom')}>← Newsroom</a></p>
